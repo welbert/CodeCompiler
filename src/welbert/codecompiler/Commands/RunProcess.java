@@ -10,30 +10,71 @@ import java.io.OutputStreamWriter;
 
 public class RunProcess {
 
-	BufferedReader brOut;
-	BufferedReader brErr;
-	BufferedWriter wrIn;
+	private BufferedReader brOut;
+	private BufferedReader brErr;
+	private BufferedWriter wrIn;
+	private Process process;
 	
 	public RunProcess(String commandName) throws IOException{
-			Process process = new ProcessBuilder(
-					commandName).start();
-					InputStream isErr = process.getErrorStream();
-					InputStreamReader isrErr = new InputStreamReader(isErr);
-					brErr = new BufferedReader(isrErr);
-					InputStream stdOut = process.getInputStream();
-					InputStreamReader isrOut = new InputStreamReader(stdOut);
-					brOut = new BufferedReader(isrOut);
-					OutputStream stdin = process.getOutputStream ();
-					wrIn = new BufferedWriter(new OutputStreamWriter(stdin));			
+ 		process = new ProcessBuilder(commandName.split(" ")).redirectErrorStream(true).start();
+		InputStream isErr = process.getErrorStream();
+		InputStreamReader isrErr = new InputStreamReader(isErr);
+		brErr = new BufferedReader(isrErr);
+		
+		InputStream stdOut = process.getInputStream();
+		InputStreamReader isrOut = new InputStreamReader(stdOut);
+		brOut = new BufferedReader(isrOut);
+		
+		OutputStream stdin = process.getOutputStream ();
+		wrIn = new BufferedWriter(new OutputStreamWriter(stdin));			
 	}
 	
-	public String getReturnProcess() throws IOException{
+	public RunProcess(String[] commandsName) throws IOException{
+ 		process = new ProcessBuilder(commandsName).redirectErrorStream(true).start();
+		InputStream isErr = process.getErrorStream();
+		InputStreamReader isrErr = new InputStreamReader(isErr);
+		brErr = new BufferedReader(isrErr);
+		
+		InputStream stdOut = process.getInputStream();
+		InputStreamReader isrOut = new InputStreamReader(stdOut);
+		brOut = new BufferedReader(isrOut);
+		
+		OutputStream stdin = process.getOutputStream ();
+		wrIn = new BufferedWriter(new OutputStreamWriter(stdin));			
+	}
+	
+	public void writeStdIn(String asMessage) throws IOException{
+		wrIn.write(asMessage);
+		wrIn.flush();
+	}
+	
+	public String getReturnProcessOut() throws IOException{
 		String line;
 		String result="";
 		while ((line = brOut.readLine()) != null) {
-		  result += line;
+		  result += line+"\n";
 		}
 		
 		return result;
+	}
+	
+	public String getReturnProcessErr() throws IOException{
+		String line;
+		String result="";
+		while ((line = brErr.readLine()) != null) {
+		  result += line+"\n";
+		}
+		
+		return result;
+	}
+	
+	public void destroy(){
+		try{
+			wrIn.close();
+			brErr.close();
+			brOut.close();
+		}catch(Exception e){}
+		
+		process.destroy();
 	}
 }
