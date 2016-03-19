@@ -7,6 +7,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JFrame;
 import javax.swing.KeyStroke;
 
+import welbert.codecompiler.Commands.Functions;
 import welbert.codecompiler.gui.Project;
 
 import java.awt.event.*;
@@ -17,10 +18,13 @@ import java.awt.*;
 public class MainFrame extends JFrame
                                implements ActionListener {
     JDesktopPane desktop;
+    private Functions myFunctions = new Functions();
+    private String[] compilers;
  
     public MainFrame() {
         super("CodeCompiler");
- 
+        
+        compilers = myFunctions.getCompilers();
         //Make the big window be indented 50 pixels from each edge
         //of the screen.
         int inset = 50;
@@ -112,7 +116,7 @@ public class MainFrame extends JFrame
  
     //Create a new internal frame.
     protected void createFrame() {
-        Project frame = new Project("New Project", new String());
+        Project frame = new Project("New Project", compilers);
         frame.setVisible(true); //necessary as of 1.3
         desktop.add(frame);
         try {
@@ -146,6 +150,7 @@ public class MainFrame extends JFrame
     }
  
     public static void main(String[] args) {
+    	
         //Schedule a job for the event-dispatching thread:
         //creating and showing this application's GUI.
         javax.swing.SwingUtilities.invokeLater(new Runnable() {

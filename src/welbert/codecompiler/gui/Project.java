@@ -6,11 +6,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import net.miginfocom.swing.MigLayout;
 import welbert.codecompiler.Commands.Functions;
+import welbert.codecompiler.staticsvalues.Config;
+import welbert.codecompiler.utils.Arquivo;
 
 import javax.swing.JTextField;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -21,19 +24,29 @@ public class Project extends JInternalFrame
 					implements ActionListener {
 	private JTextField txtProblem;
 	private JTextField txtTimelimit;
+	private JComboBox comboBoxCompilers;
 	private Functions myFunctions = new Functions();
+	private Arquivo codeFile;
+	private boolean newFile;
 
 	/**
 	 * Create the frame.
 	 */
-	public Project(String Project,String compilers){
+	public Project(String Project,String[] compilers){
+		if(!Project.equals("New Project")){
+			newFile = false;
+			txtProblem.setEnabled(false);
+			//Load file
+		}else
+			newFile = true;
+		
 		setClosable(true);
 		setIconifiable(true);
 		setMaximizable(true);
 		setTitle(Project);
 		setResizable(true);
 		setBounds(100, 100, 536, 308);
-		getContentPane().setLayout(new MigLayout("", "[grow][95.00,grow][][grow][][][grow][][grow][][][][][][][grow][][]", "[][][][][grow][][][][][grow][grow][][][][][][][][][][][][][]"));
+		getContentPane().setLayout(new MigLayout("", "[grow][95.00,grow][][grow][][][grow][][grow][][][][][][][grow][][]", "[][][][][grow][][][][][grow][grow][][][][][][][][][][][][][][]"));
 		
 		JLabel lblProblem = new JLabel("Problem: ");
 		getContentPane().add(lblProblem, "cell 0 0,alignx trailing");
@@ -72,22 +85,39 @@ public class Project extends JInternalFrame
 		JTextPane txtpnStdin = new JTextPane();
 		JScrollPane scrollIn = new JScrollPane();
 		scrollIn.setViewportView(txtpnStdin);
-		getContentPane().add(scrollIn, "cell 0 9 2 15,grow");
+		getContentPane().add(scrollIn, "cell 0 9 2 16,grow");
 		
-		JComboBox<String> comboBox = new JComboBox<String>();
-		getContentPane().add(comboBox, "cell 2 23 14 1,growx,aligny center");
+		JButton btnEdit = new JButton("Edit");
+		getContentPane().add(btnEdit, "cell 17 22");
 		
-		JButton btnSubmit = new JButton("Compile");
-		btnSubmit.setActionCommand("SUBMIT");
+		comboBoxCompilers = new JComboBox(compilers);
+		
+		getContentPane().add(comboBoxCompilers, "cell 2 24 14 1,growx,aligny center");
+		
+		JButton btnSubmit;		
+		if(newFile){
+			btnSubmit = new JButton("New");
+			btnSubmit.setActionCommand("NEW");
+		}else{
+			btnSubmit = new JButton("Compile");
+			btnSubmit.setActionCommand("SUBMIT");
+		}
 		btnSubmit.addActionListener(this);
-		getContentPane().add(btnSubmit, "cell 17 23");
+		getContentPane().add(btnSubmit, "cell 17 24");
 
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		switch (e.getActionCommand()) {
+		case "NEW":
+			try {
+				codeFile = new Arquivo(txtProblem.getText()+"."+comboBoxCompilers.getSelectedItem().toString().split(" ",2)[0]);
+			} catch (IOException e1) {
+				JOptionPane.showMessageDialog(null, "Falha ao criar um novo arquivo.");
+			}
+		break;
 		case "SUBMIT":
-			String[] result = myFunctions.getCompilers();
+			Object[] result = myFunctions.getCompilers();
 			JOptionPane.showMessageDialog(null, result);
 		break;
 		

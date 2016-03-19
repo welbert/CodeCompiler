@@ -11,15 +11,15 @@ import java.io.OutputStreamWriter;
 public class RunProcess {
 
 	private BufferedReader brOut;
-	private BufferedReader brErr;
+	//private BufferedReader brErr;
 	private BufferedWriter wrIn;
 	private Process process;
 	
 	public RunProcess(String commandName) throws IOException{
- 		process = new ProcessBuilder(commandName.split(" ")).redirectErrorStream(true).start();
-		InputStream isErr = process.getErrorStream();
-		InputStreamReader isrErr = new InputStreamReader(isErr);
-		brErr = new BufferedReader(isrErr);
+		process = new ProcessBuilder(commandName.split(" ")).start();
+		//InputStream isErr = process.getErrorStream();
+		//InputStreamReader isrErr = new InputStreamReader(isErr);
+		//brErr = new BufferedReader(isrErr);
 		
 		InputStream stdOut = process.getInputStream();
 		InputStreamReader isrOut = new InputStreamReader(stdOut);
@@ -30,10 +30,10 @@ public class RunProcess {
 	}
 	
 	public RunProcess(String[] commandsName) throws IOException{
- 		process = new ProcessBuilder(commandsName).redirectErrorStream(true).start();
-		InputStream isErr = process.getErrorStream();
-		InputStreamReader isrErr = new InputStreamReader(isErr);
-		brErr = new BufferedReader(isrErr);
+ 		process = new ProcessBuilder(commandsName).start();
+		//InputStream isErr = process.getErrorStream();
+		//InputStreamReader isrErr = new InputStreamReader(isErr);
+		//brErr = new BufferedReader(isrErr);
 		
 		InputStream stdOut = process.getInputStream();
 		InputStreamReader isrOut = new InputStreamReader(stdOut);
@@ -58,6 +58,7 @@ public class RunProcess {
 		return result;
 	}
 	
+	/*
 	public String getReturnProcessErr() throws IOException{
 		String line;
 		String result="";
@@ -67,11 +68,12 @@ public class RunProcess {
 		
 		return result;
 	}
+	*/
 	
 	public void destroy(){
 		try{
 			wrIn.close();
-			brErr.close();
+			//brErr.close();
 			brOut.close();
 		}catch(Exception e){}
 		
