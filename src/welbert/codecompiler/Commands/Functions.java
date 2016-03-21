@@ -9,19 +9,23 @@ public class Functions {
 	boolean Windows = System.getProperty("os.name").contains("Windows");
 	
 	public String[] getCompilers(){
+		String tempResult;
 		ArrayList<String> compilers = new ArrayList<String>();
 		try {
 			RunProcess runProcess = new RunProcess("gcc --version");
-			compilers.add("gcc"+runProcess.getReturnProcessOut().split(Pattern.quote(")"), 2)[1].split("\n",2)[0]);
+			tempResult=runProcess.getReturnProcessOut();
+			compilers.add("gcc - "+tempResult.split(Pattern.quote(")"), 2)[1].split("\n",2)[0]);
 		} catch (IOException e) {}
 		try {
 			RunProcess runProcess = new RunProcess("g++ --version");
-			compilers.add("g++"+runProcess.getReturnProcessOut().split(Pattern.quote(")"), 2)[1].split("\n",2)[0]);
+			tempResult=runProcess.getReturnProcessOut();
+			compilers.add("g++ - "+tempResult.split(Pattern.quote(")"), 2)[1].split("\n",2)[0]);
 		} catch (IOException e) {}
 		try {
 			RunProcess runProcess = new RunProcess("java -version");
-			compilers.add("java"+runProcess.getReturnProcessOut().split(Pattern.quote(")"), 2)[1].split("\n",2)[0]);
-		} catch (IOException e) {}
+			tempResult=runProcess.getReturnProcessOut();
+			compilers.add("java - "+tempResult.split(Pattern.quote("\""), 2)[1].split("\n",2)[0]);
+		} catch (Exception e) {e.printStackTrace();}
 		if(compilers.isEmpty())
 			return null;
 		else{
