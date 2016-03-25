@@ -9,8 +9,12 @@ import javax.swing.KeyStroke;
 
 import welbert.codecompiler.Commands.Functions;
 import welbert.codecompiler.gui.Project;
+import welbert.codecompiler.utils.Arquivo;
 
 import java.awt.event.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.awt.*;
  
 
@@ -20,9 +24,22 @@ public class MainFrame extends JFrame
     JDesktopPane desktop;
     private Functions myFunctions = new Functions();
     private String[] compilers;
+    private static MainFrame instance;
+    private Arquivo log;
+    
+    public static MainFrame getInstance(){
+    	if(instance==null)
+    		instance = new MainFrame();
+    	
+    	return instance;
+    }
  
-    public MainFrame() {
+    private MainFrame() {
         super("CodeCompiler");
+        
+        try{
+        	log = new Arquivo("log.err");
+        }catch(Exception e){}
         
         compilers = myFunctions.getCompilers();
         //Make the big window be indented 50 pixels from each edge
@@ -116,7 +133,7 @@ public class MainFrame extends JFrame
  
     //Create a new internal frame.
     protected void createFrame() {
-        Project frame = new Project("New Project", compilers);
+        Project frame = new Project("New Project", compilers,"");
         frame.setVisible(true); //necessary as of 1.3
         desktop.add(frame);
         try {
@@ -142,7 +159,7 @@ public class MainFrame extends JFrame
     private static void createAndShowGUI() {
  
         //Create and set up the window.
-        MainFrame frame = new MainFrame();
+        MainFrame frame = MainFrame.getInstance();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
  
         //Display the window.
@@ -158,5 +175,14 @@ public class MainFrame extends JFrame
                 createAndShowGUI();
             }
         });
+    }
+    
+    
+    public void log(String message){
+    	try{
+    		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+    		Date date = new Date();
+    		log.salvar(dateFormat.format(date) +" -> " +message);
+    	}catch(Exception e){}
     }
 }

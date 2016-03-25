@@ -46,6 +46,8 @@ import java.util.ArrayList;
 public class Arquivo  {
 	private File arquivo;
 	
+	public static boolean WINDOWS = System.getProperty("os.name").contains("Windows");
+	
 	private FileWriter fw ;
 	private BufferedWriter bw;
 	private FileReader fr;
@@ -54,8 +56,12 @@ public class Arquivo  {
 	public Arquivo(String nome)throws IOException{		
 		//nome = nome.concat(".txt");
 		arquivo = new File(nome);
+		String sep;
+		if(WINDOWS)
+			sep = "\\";
+		else
+			sep = "/";
 		
-		String sep = "\\";
 		int lastindex = nome.lastIndexOf(sep);
 		if(lastindex!=-1){
 			File dirMake = new File(nome.substring(0,lastindex));
@@ -79,6 +85,10 @@ public class Arquivo  {
 		if(!arquivo.exists()){
 			arquivo.createNewFile();
 		}
+	}
+	
+	public File getFile(){
+		return arquivo;
 	}
 
 	public void salvar(String texto)throws IOException{
