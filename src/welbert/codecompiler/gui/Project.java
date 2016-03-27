@@ -6,16 +6,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import net.miginfocom.swing.MigLayout;
 import welbert.codecompiler.Commands.Functions;
-import welbert.codecompiler.Commands.RunProcess;
-import welbert.codecompiler.staticsvalues.Config;
 import welbert.codecompiler.utils.Arquivo;
 
 import javax.swing.JTextField;
 
-import java.awt.Desktop;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
 
 import javax.swing.JButton;
@@ -30,9 +27,11 @@ public class Project extends JInternalFrame
 	
 	private JTextPane txtpnStdin;
 	private JTextPane txtpnStdOut;
+	private JTextPane txtpnStdOutcode;
 	
 	private JButton btnSubmit;	
 	private JButton btnEdit;
+	private JButton btnClear;
 	
 	private JComboBox comboBoxCompilers;
 	
@@ -79,7 +78,7 @@ public class Project extends JInternalFrame
 		scrollOut.setViewportView(txtpnStdOut);
 		getContentPane().add(scrollOut, "cell 0 3 2 5,grow");
 		
-		JTextPane txtpnStdOutcode = new JTextPane();
+		txtpnStdOutcode = new JTextPane();
 		txtpnStdOutcode.setEditable(false);
 		JScrollPane scrolloutcode = new JScrollPane();
 		scrolloutcode.setViewportView(txtpnStdOutcode);
@@ -95,9 +94,14 @@ public class Project extends JInternalFrame
 		
 		btnEdit = new JButton("Edit");
 		btnEdit.setActionCommand("EDIT");
-		btnEdit.addActionListener(this);
-		
+		btnEdit.addActionListener(this);		
 		getContentPane().add(btnEdit, "cell 17 22");
+		
+		
+		btnClear = new JButton("Clear");
+		getContentPane().add(btnClear, "cell 9 22");
+		btnClear.setActionCommand("CLEAR");
+		btnClear.addActionListener(this);
 		
 		comboBoxCompilers = new JComboBox(aascompilers);
 		getContentPane().add(comboBoxCompilers, "cell 2 24 14 1,growx,aligny center");
@@ -106,11 +110,13 @@ public class Project extends JInternalFrame
 		if(!asconfigFile.trim().equals("")){
 			btnSubmit = new JButton("Compile");
 			btnSubmit.setActionCommand("SUBMIT");
-			btnEdit.setVisible(true);			
+			btnEdit.setVisible(true);
+			btnClear.setVisible(true);
 		}else{
 			btnSubmit = new JButton("New");
 			btnSubmit.setActionCommand("NEW");
 			btnEdit.setVisible(false);
+			btnClear.setVisible(false);
 		}
 		btnSubmit.addActionListener(this);
 		getContentPane().add(btnSubmit, "cell 17 24");
@@ -134,7 +140,7 @@ public class Project extends JInternalFrame
 		switch (e.getActionCommand()) {
 		
 		case "NEW":
-				String problemName = txtProblem.getText();
+				String problemName = txtProblem.getText().replace(" ", "");
 				String extension = comboBoxCompilers.getSelectedItem().toString().split(" ",2)[0];
 				String pathFileProblem = myFunctions.getPathFileCode(problemName, extension);
 				if(myFunctions.existsFile(pathFileProblem)){
@@ -188,7 +194,22 @@ public class Project extends JInternalFrame
 		break;
 		
 		case "SUBMIT":
-			
+			try {
+				Object[] loOut;
+				String lsStdOutCode;
+				loOut = myFunctions.runCompileInCode(codeFile.getPathName(), 
+							comboBoxCompilers.getSelectedItem().toString().split(" ",2)[0]);
+				lsStdOutCode=txtpnStdOutcode.getText();
+				txtpnStdOutcode.setText(loOut[1]+"-----------------\n"+lsStdOutCode);
+				
+				if((boolean)loOut[0]){
+					myFunctions.diffStrings(txtpnStdOut.getText(),String.valueOf(loOut[1]));
+				}
+				
+			} catch (Exception ex) {
+				log("Erro 106 - Falha ao executar o compilador ou a executar o código.\n"
+						+ "Mensagem retornada: "+ex.getMessage(),ex.getMessage());
+			}
 		break;
 		
 		case "EDIT":
@@ -199,13 +220,17 @@ public class Project extends JInternalFrame
 			}
 		break;
 		
+		case "CLEAR":
+			txtpnStdOutcode.setText("");
+			break;
+		
 		default:
 			break;
 		}		
 	}
 	
 	private void loadConfigFile(String file) throws IOException{
-		String aux="";
+		String aux="",aux2="";
 		configFile = new Arquivo(file);
 		txtProblem.setText(configFile.carregar());
 		codeFile = new Arquivo(configFile.carregar());
@@ -215,12 +240,20 @@ public class Project extends JInternalFrame
 		}catch(Exception e){txtTimelimit.setText("0");}
 		aux = configFile.carregar();
 		while(!aux.equals("---")){
-			txtpnStdin.setText(txtpnStdin.getText()+aux);
+			aux2 = txtpnStdin.getText();
+			if(!aux2.trim().equals(""))
+				txtpnStdin.setText(aux2+"\n"+aux);
+			else
+				txtpnStdin.setText(aux);
 			aux = configFile.carregar();
 		}
 		aux = configFile.carregar();
 		while(!aux.equals("---")){
-			txtpnStdOut.setText(txtpnStdin.getText()+aux);
+			aux2 = txtpnStdOut.getText();
+			if(!aux2.trim().equals(""))
+				txtpnStdOut.setText(aux2+"\n"+aux);
+			else
+				txtpnStdOut.setText(aux);
 			aux = configFile.carregar();
 		}
 		try{
@@ -231,7 +264,7 @@ public class Project extends JInternalFrame
 	}
 	
 	private void newConfigFile(String asConfigFileDir,String asProblemName) throws IOException{
-		String configFileDir = asConfigFileDir.substring(0, asConfigFileDir.lastIndexOf(".")-1)+".wcd";
+		String configFileDir = asConfigFileDir.substring(0, asConfigFileDir.lastIndexOf("."))+".wcd";
 		configFile = new Arquivo(configFileDir);
 		configFile.deletarArquivo();
 		configFile.salvar(asProblemName);
@@ -247,6 +280,7 @@ public class Project extends JInternalFrame
 	
 	private void initInterfaceLoaded(){
 		btnEdit.setVisible(true);
+		btnClear.setVisible(true);
 		btnSubmit = new JButton("Compile");
 		btnSubmit.setActionCommand("SUBMIT");
 		txtProblem.setEnabled(false);
