@@ -214,10 +214,11 @@ public class MainFrame extends JFrame
 	}
     
     public void log(String message){
-    	try{
-    		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-    		Date date = new Date();
-    		log.salvar(dateFormat.format(date) +" -> " +message);
-    	}catch(Exception e){}
+    	if(Config.log)
+	    	try{
+	    		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+	    		Date date = new Date();
+	    		log.salvar(dateFormat.format(date) +" -> " +message);
+	    	}catch(Exception e){}
     }
 }

@@ -1,7 +1,8 @@
 package welbert.codecompiler.staticsvalues;
 
 public class Config {
-	public static final String version = "0.1";
+	public static final String version = "0.7";
+	public static final boolean log = true;
 	public static boolean WINDOWS = System.getProperty("os.name").contains("Windows");
 	
 	public static final String templateC = "#include <stdio.h>\n\nint main(void) {\n	// your code goes here\n"+

@@ -52,7 +52,10 @@ public class RunProcess {
 		String line;
 		String result="";
 		while ((line = brOut.readLine()) != null) {
-		  result += line+"\n";
+			if(!result.equals(""))
+				result += "\n"+line;
+			else
+				result = line;
 		}
 		
 		return result;
@@ -63,7 +66,10 @@ public class RunProcess {
 		String line;
 		String result="";
 		while ((line = brErr.readLine()) != null) {
-		  result += line+"\n";
+			if(!result.equals(""))
+				result += "\n"+line;
+			else
+				result = line;
 		}
 		
 		return result;

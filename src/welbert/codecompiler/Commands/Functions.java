@@ -1,11 +1,17 @@
 package welbert.codecompiler.Commands;
 
+import java.awt.Color;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.regex.Pattern;
+
+import javax.swing.JTextPane;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
 import welbert.codecompiler.staticsvalues.Config;
 import welbert.codecompiler.utils.Arquivo;
@@ -132,13 +138,37 @@ public class Functions {
 		return new Object[]{success,out};
 	}
 	
-	public String diffStrings(String in1,String in2){
-		String result = "";
-		
+	public boolean diffStrings(String in1,String in2,JTextPane textArea) throws Exception{	
+		StyledDocument doc = textArea.getStyledDocument();
 		diff_match_patch dmp = new diff_match_patch();
 		LinkedList<Diff> llDiff =  dmp.diff_main(in1, in2);
+		boolean lbCorrect = true;
 		
-		return result;
+		Style styleCorrect = textArea.addStyle("Line Correct", null);
+        StyleConstants.setForeground(styleCorrect, Color.green);
+        Style styleWrong = textArea.addStyle("Line Wrong", null);
+        StyleConstants.setForeground(styleWrong, Color.red);
+        Style styleDefault = textArea.addStyle("Line Default", null);
+        StyleConstants.setForeground(styleDefault, Color.black);
+        
+        doc.insertString(doc.getLength(), "\n-----------------\n",styleDefault);
+		for(int i = 0; i<llDiff.size();i++){
+			if(llDiff.get(i).operation == diff_match_patch.Operation.EQUAL){
+				doc.insertString(doc.getLength(), llDiff.get(i).text,styleCorrect);
+			}else{
+				doc.insertString(doc.getLength(), llDiff.get(i).text,styleWrong);
+				lbCorrect = false;
+			}
+		}
+		return lbCorrect;
+	}
+	
+	public void alterTextPane(String text,JTextPane textArea) throws Exception{
+		StyledDocument doc = textArea.getStyledDocument();
+		Style styleDefault = textArea.addStyle("Line Default", null);
+        StyleConstants.setForeground(styleDefault, Color.black);
+        doc.insertString(doc.getLength(), "\n-----------------\n",styleDefault);
+        doc.insertString(doc.getLength(), text,styleDefault);
 	}
 	
  	public String[] getCompilers(){

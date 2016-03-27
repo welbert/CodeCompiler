@@ -33,7 +33,7 @@ public class Project extends JInternalFrame
 	private JButton btnEdit;
 	private JButton btnClear;
 	
-	private JComboBox comboBoxCompilers;
+	private JComboBox<String> comboBoxCompilers;
 	
 	private Functions myFunctions = new Functions();
 	private Arquivo codeFile;
@@ -103,7 +103,7 @@ public class Project extends JInternalFrame
 		btnClear.setActionCommand("CLEAR");
 		btnClear.addActionListener(this);
 		
-		comboBoxCompilers = new JComboBox(aascompilers);
+		comboBoxCompilers = new JComboBox<String>(aascompilers);
 		getContentPane().add(comboBoxCompilers, "cell 2 24 14 1,growx,aligny center");
 		
 			
@@ -194,22 +194,41 @@ public class Project extends JInternalFrame
 		break;
 		
 		case "SUBMIT":
-			try {
-				Object[] loOut;
-				String lsStdOutCode;
+			Object[] loOut;
+			String lsStdOutCode;
+			try {				
 				loOut = myFunctions.runCompileInCode(codeFile.getPathName(), 
 							comboBoxCompilers.getSelectedItem().toString().split(" ",2)[0]);
-				lsStdOutCode=txtpnStdOutcode.getText();
-				txtpnStdOutcode.setText(loOut[1]+"-----------------\n"+lsStdOutCode);
-				
-				if((boolean)loOut[0]){
-					myFunctions.diffStrings(txtpnStdOut.getText(),String.valueOf(loOut[1]));
-				}
-				
+							
 			} catch (Exception ex) {
 				log("Erro 106 - Falha ao executar o compilador ou a executar o código.\n"
 						+ "Mensagem retornada: "+ex.getMessage(),ex.getMessage());
+				return;
+			}	
+						
+			lsStdOutCode=txtpnStdOutcode.getText();	
+			if((boolean)loOut[0]){
+				try{
+					boolean isCorrect;
+					isCorrect = myFunctions.diffStrings(txtpnStdOut.getText(),String.valueOf(loOut[1]),txtpnStdOutcode);
+					if(isCorrect)
+						showMessage("O stdOut e StdOutCode são idênticos.");
+					
+				}catch (Exception ex) {
+					txtpnStdOutcode.setText(lsStdOutCode+"\n-----------------\n"+loOut[1]);
+					log(ex.getMessage());
+				}
+			}else{
+				try{
+					myFunctions.alterTextPane(String.valueOf(loOut[1]), txtpnStdOutcode);
+				}catch (Exception ex) {
+					txtpnStdOutcode.setText(lsStdOutCode+"\n-----------------\n"+loOut[1]);
+					log(ex.getMessage());
+				}
 			}
+			
+				
+			
 		break;
 		
 		case "EDIT":
@@ -297,5 +316,9 @@ public class Project extends JInternalFrame
 	private void log(String message,String exception){
 		MainFrame.getInstance().log("Interface - "+message+" :::: Exception - "+exception);
 		showMessage(message);
+	}
+	
+	private void log(String exception){
+		MainFrame.getInstance().log("Interface - Falha ao fazer o diff do texto :::: Exception - "+exception);
 	}
 }
