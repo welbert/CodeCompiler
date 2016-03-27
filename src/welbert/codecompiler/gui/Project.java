@@ -39,23 +39,16 @@ public class Project extends JInternalFrame
 	private Functions myFunctions = new Functions();
 	private Arquivo codeFile;
 	private Arquivo configFile;
-	private boolean newFile;
 
 	/**
 	 * Create the frame.
 	 */
-	public Project(String Project,String[] compilers,String configFile){
-		if(!Project.equals("New Project")){
-			newFile = false;
-			txtProblem.setEnabled(false);
-			//Load file
-		}else
-			newFile = true;
+	public Project(String asProject,String[] aascompilers,String asconfigFile){
 		
 		setClosable(true);
 		setIconifiable(true);
 		setMaximizable(true);
-		setTitle(Project);
+		setTitle(asProject);
 		setResizable(true);
 		setBounds(100, 100, 536, 308);
 		getContentPane().setLayout(new MigLayout("", "[grow][95.00,grow][][grow][][][grow][][grow][][][][][][][grow][][]", "[][][][][grow][][][][][grow][grow][][][][][][][][][][][][][][]"));
@@ -106,21 +99,34 @@ public class Project extends JInternalFrame
 		
 		getContentPane().add(btnEdit, "cell 17 22");
 		
-		comboBoxCompilers = new JComboBox(compilers);
+		comboBoxCompilers = new JComboBox(aascompilers);
 		getContentPane().add(comboBoxCompilers, "cell 2 24 14 1,growx,aligny center");
 		
 			
-		if(newFile){
+		if(!asconfigFile.trim().equals("")){
+			btnSubmit = new JButton("Compile");
+			btnSubmit.setActionCommand("SUBMIT");
+			btnEdit.setVisible(true);			
+		}else{
 			btnSubmit = new JButton("New");
 			btnSubmit.setActionCommand("NEW");
 			btnEdit.setVisible(false);
-		}else{
-			btnSubmit = new JButton("Compile");
-			btnSubmit.setActionCommand("SUBMIT");
-			btnEdit.setVisible(true);
 		}
 		btnSubmit.addActionListener(this);
 		getContentPane().add(btnSubmit, "cell 17 24");
+		
+		//Load file
+		if(!asconfigFile.trim().equals("")){
+			try {
+				loadConfigFile(asconfigFile);
+			} catch (Exception e) {
+				String message = "Erro 105 - Falha ao carregar o arquivo de configurações ou arquivo corrompido.";
+				log(message,e.getMessage());
+				this.doDefaultCloseAction();
+				return;
+			}
+			
+		}
 
 	}
 
@@ -148,7 +154,7 @@ public class Project extends JInternalFrame
 										ex.getMessage());
 						}
 						try{
-							newConfigFile(problemName);
+							newConfigFile(codeFile.getPathName(),problemName);
 						}catch (Exception ex) {
 							this.log("Erro 104 - Falha ao criar o Arquivo de configurações", 
 									ex.getMessage());
@@ -173,7 +179,7 @@ public class Project extends JInternalFrame
 									ex.getMessage());
 					}
 					try{
-						newConfigFile(problemName);
+						newConfigFile(codeFile.getPathName(),problemName);
 					}catch (Exception ex) {
 						this.log("Erro 104 - Falha ao criar o Arquivo de configurações", 
 								ex.getMessage());
@@ -200,8 +206,9 @@ public class Project extends JInternalFrame
 	
 	private void loadConfigFile(String file) throws IOException{
 		String aux="";
-		configFile = new Arquivo(myFunctions.getPathFileCode(file, "config"));
-		txtProblem.setText(codeFile.carregar());
+		configFile = new Arquivo(file);
+		txtProblem.setText(configFile.carregar());
+		codeFile = new Arquivo(configFile.carregar());
 		try{
 			int timelimit = Integer.parseInt(configFile.carregar());
 			txtTimelimit.setText(timelimit+"");
@@ -209,29 +216,40 @@ public class Project extends JInternalFrame
 		aux = configFile.carregar();
 		while(!aux.equals("---")){
 			txtpnStdin.setText(txtpnStdin.getText()+aux);
+			aux = configFile.carregar();
 		}
 		aux = configFile.carregar();
 		while(!aux.equals("---")){
 			txtpnStdOut.setText(txtpnStdin.getText()+aux);
+			aux = configFile.carregar();
 		}
 		try{
 			comboBoxCompilers.setSelectedIndex(Integer.parseInt(configFile.carregar()));
 		}catch(Exception e){}
+		
+		initInterfaceLoaded();
 	}
 	
-	private void newConfigFile(String file) throws IOException{
-		configFile = new Arquivo(myFunctions.getPathFileCode(file, "config"));
+	private void newConfigFile(String asConfigFileDir,String asProblemName) throws IOException{
+		String configFileDir = asConfigFileDir.substring(0, asConfigFileDir.lastIndexOf(".")-1)+".wcd";
+		configFile = new Arquivo(configFileDir);
 		configFile.deletarArquivo();
-		configFile.salvar(file);
+		configFile.salvar(asProblemName);
+		configFile.salvar(asConfigFileDir);
 		configFile.salvar(txtTimelimit.getText());
 		configFile.salvar(txtpnStdOut.getText());
 		configFile.salvar("---");
 		configFile.salvar(txtpnStdin.getText());
 		configFile.salvar("---");
 		configFile.salvar(comboBoxCompilers.getSelectedIndex()+"");
+		initInterfaceLoaded();
+	}
+	
+	private void initInterfaceLoaded(){
 		btnEdit.setVisible(true);
 		btnSubmit = new JButton("Compile");
 		btnSubmit.setActionCommand("SUBMIT");
+		txtProblem.setEnabled(false);
 	}
 	
 	public void showMessage(String message){

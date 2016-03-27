@@ -1,17 +1,22 @@
 package welbert.codecompiler.gui;
 
 import javax.swing.JDesktopPane;
+import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JMenuBar;
 import javax.swing.JFrame;
 import javax.swing.KeyStroke;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import welbert.codecompiler.Commands.Functions;
 import welbert.codecompiler.gui.Project;
+import welbert.codecompiler.staticsvalues.Config;
 import welbert.codecompiler.utils.Arquivo;
 
 import java.awt.event.*;
+import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -116,7 +121,25 @@ public class MainFrame extends JFrame
 		break;
 		
 		case "LOAD":
-			
+			try {
+				JFileChooser fc = new JFileChooser(); 
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("WCodeCompiler (.wcd)", "wcd","text");
+				fc.setFileFilter(filter);
+				if(Config.WINDOWS)
+					fc.setCurrentDirectory(new File("Problems\\."));
+				else
+					fc.setCurrentDirectory(new File("Problems//."));
+				
+	            int res = fc.showOpenDialog(null); //Abre o dialogo para selecionar os arquivos
+	            
+	            if(res == JFileChooser.APPROVE_OPTION){
+	            	Arquivo file = new Arquivo(fc.getSelectedFile().getCanonicalPath());
+	            	createFrame(file.carregar(),file.getPathName());					
+	            }
+			}catch(Exception ex){
+				showMessage("Erro 001 - Falha ao Carregar o arquivo.");
+				log("Erro 001 - Falha ao Carregar o arquivo."+ex.getMessage());
+			}
 		break;
 		
 		case "ABOUT":
@@ -134,6 +157,15 @@ public class MainFrame extends JFrame
     //Create a new internal frame.
     protected void createFrame() {
         Project frame = new Project("New Project", compilers,"");
+        frame.setVisible(true); //necessary as of 1.3
+        desktop.add(frame);
+        try {
+            frame.setSelected(true);
+        } catch (java.beans.PropertyVetoException e) {}
+    }
+    
+    protected void createFrame(String project, String configDir) {
+        Project frame = new Project(project, compilers,configDir);
         frame.setVisible(true); //necessary as of 1.3
         desktop.add(frame);
         try {
@@ -177,6 +209,9 @@ public class MainFrame extends JFrame
         });
     }
     
+    public void showMessage(String message){
+		JOptionPane.showMessageDialog(null, message);
+	}
     
     public void log(String message){
     	try{
