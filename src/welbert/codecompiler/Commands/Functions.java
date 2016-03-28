@@ -189,11 +189,13 @@ public class Functions {
 		try {
 			RunProcess runProcess = new RunProcess("java -version");
 			tempResult=runProcess.getReturnProcessOut();
+			runProcess = new RunProcess("javac -version");
+			tempResult=runProcess.getReturnProcessOut();
 			compilers.add("java - "+tempResult.split(Pattern.quote("\""), 2)[1].split("\n",2)[0]);
 			runProcess.destroy();
 		} catch (Exception e) {}
 		if(compilers.isEmpty())
-			return null;
+			return new String[]{};
 		else{
 			String[] result = new String[compilers.size()];
 			for(int i = 0;i<compilers.size();i++)

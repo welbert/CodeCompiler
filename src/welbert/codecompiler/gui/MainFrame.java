@@ -156,6 +156,10 @@ public class MainFrame extends JFrame
  
     //Create a new internal frame.
     protected void createFrame() {
+    	if(compilers.length < 1){
+    		showMessage("Não há compiladores instalados (gcc,g++,javac)");
+    		return;
+    	}
         Project frame = new Project("New Project", compilers,"");
         frame.setVisible(true); //necessary as of 1.3
         desktop.add(frame);
@@ -165,6 +169,10 @@ public class MainFrame extends JFrame
     }
     
     protected void createFrame(String project, String configDir) {
+    	if(compilers.length < 1){
+    		showMessage("Não há compiladores instalados (gcc,g++,javac)");
+    		return;
+    	}
         Project frame = new Project(project, compilers,configDir);
         frame.setVisible(true); //necessary as of 1.3
         desktop.add(frame);
