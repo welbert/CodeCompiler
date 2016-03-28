@@ -127,7 +127,7 @@ public class Project extends JInternalFrame
 			try {
 				loadConfigFile(asconfigFile);
 			} catch (Exception e) {
-				String message = "Erro 105 - Falha ao carregar o arquivo de configuraÃ§Ãµes ou arquivo corrompido.";
+				String message = "Erro 105 - Falha ao carregar o arquivo de configuração ou arquivo corrompido.";
 				log(message,e.getMessage());
 				this.doDefaultCloseAction();
 				return;
@@ -149,7 +149,7 @@ public class Project extends JInternalFrame
 			String extension = comboBoxCompilers.getSelectedItem().toString().split(" ",2)[0];
 			String pathFileProblem = myFunctions.getPathFileCode(problemName, extension);
 			if(myFunctions.existsFile(pathFileProblem)){
-				switch (showConfirmDialog("O arquivo "+pathFileProblem+" jÃ¡ existe. Deseja substituir?")) {
+				switch (showConfirmDialog("O arquivo "+pathFileProblem+" já existe. Deseja substituir?")) {
 				case JOptionPane.YES_OPTION:
 					try{
 						codeFile = myFunctions.createNewFile(problemName, extension);
@@ -167,7 +167,7 @@ public class Project extends JInternalFrame
 					try{
 						newConfigFile(codeFile.getAbsolutePath(),problemName);
 					}catch (Exception ex) {
-						this.log("Erro 104 - Falha ao criar o Arquivo de configuraÃ§Ãµes", 
+						this.log("Erro 104 - Falha ao criar o Arquivo de configuração", 
 								ex.getMessage());
 					}
 					break;
@@ -192,7 +192,7 @@ public class Project extends JInternalFrame
 				try{
 					newConfigFile(codeFile.getAbsolutePath(),problemName);
 				}catch (Exception ex) {
-					this.log("Erro 104 - Falha ao criar o Arquivo de configuraÃ§Ãµes", 
+					this.log("Erro 104 - Falha ao criar o Arquivo de configuração", 
 							ex.getMessage());
 				}
 			}
@@ -201,12 +201,15 @@ public class Project extends JInternalFrame
 		case "SUBMIT":
 			Object[] loOut;
 			String lsStdOutCode;
-			try {				
+			try {			
+				
 				loOut = myFunctions.runCompileInCode(codeFile, 
-							comboBoxCompilers.getSelectedItem().toString().split(" ",2)[0]);
+							comboBoxCompilers.getSelectedItem().toString().split(" ",2)[0],
+							0);
+							//Integer.parseInt(txtTimelimit.getText()));
 							
 			} catch (Exception ex) {
-				log("Erro 106 - Falha ao executar o compilador ou a executar o cÃ³digo.\n"
+				log("Erro 106 - Falha ao executar o compilador ou a executar o código.\n"
 						+ "Mensagem retornada: "+ex.getMessage(),ex.getMessage());
 				return;
 			}	
@@ -217,7 +220,7 @@ public class Project extends JInternalFrame
 					boolean isCorrect;
 					isCorrect = myFunctions.diffStrings(txtpnStdOut.getText(),String.valueOf(loOut[1]),txtpnStdOutcode);
 					if(isCorrect)
-						showMessage("O stdOut e StdOutCode sÃ£o idÃªnticos.");
+						showMessage("O stdOut e StdOutCode são idênticos.");
 					else
 						showMessage("O stdOut e StdOutCode estão diferentes.");
 					
@@ -296,9 +299,9 @@ public class Project extends JInternalFrame
 		configFile.salvar(asProblemName);
 		configFile.salvar(asConfigFileDir);
 		configFile.salvar(txtTimelimit.getText());
-		configFile.salvar(txtpnStdOut.getText());
-		configFile.salvar("---");
 		configFile.salvar(txtpnStdin.getText());
+		configFile.salvar("---");
+		configFile.salvar(txtpnStdOut.getText());
 		configFile.salvar("---");
 		configFile.salvar(comboBoxCompilers.getSelectedIndex()+"");
 		initInterfaceLoaded();

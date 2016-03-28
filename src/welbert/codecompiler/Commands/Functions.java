@@ -5,7 +5,6 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.regex.Pattern;
 
 import javax.swing.JTextPane;
@@ -15,8 +14,7 @@ import javax.swing.text.StyledDocument;
 
 import welbert.codecompiler.staticsvalues.Config;
 import welbert.codecompiler.utils.Arquivo;
-import welbert.codecompiler.utils.diff_match_patch;
-import welbert.codecompiler.utils.diff_match_patch.Diff;
+import welbert.codecompiler.utils.ThreadProcess;
 
 
 
@@ -97,9 +95,10 @@ public class Functions {
 	 * @return O stdout do Processo
 	 * @throws Exception - Se houver falha ao executar o processo 
 	 */
-	public Object[] runCompileInCode(Arquivo aaFile, String asCompiler) throws Exception {
+	public Object[] runCompileInCode(Arquivo aaFile, String asCompiler,int timelimit) throws Exception {
 		String out = "";boolean success = false;
 		RunProcess process;
+		Thread threadProcess = null;
 		
 		switch (asCompiler) {
 		case "gcc":
@@ -107,11 +106,18 @@ public class Functions {
 			out = process.getReturnProcessOut();
 			if(out.trim().equals("")){
 				if(Config.WINDOWS)
-					process = new RunProcess(new String[]{"a.out"});
+					process = new RunProcess(new String[]{"a.exe"});
 				else
 					process = new RunProcess(new String[]{"./a.out"});
 				
+				if(timelimit>0){
+					//threadProcess = new Thread(new ThreadProcess(process,timelimit));
+					//threadProcess.start();
+				}
 				process.waitProcessFinish();
+				//if(threadProcess.isAlive() && threadProcess!=null)
+					//threadProcess.interrupt();
+				
 				out = process.getReturnProcessOut();
 				success = true;
 			}
@@ -121,11 +127,18 @@ public class Functions {
 			out = process.getReturnProcessOut();
 			if(out.trim().equals("")){
 				if(Config.WINDOWS)
-					process = new RunProcess(new String[]{"a.out"});
+					process = new RunProcess(new String[]{"a.exe"});
 				else
 					process = new RunProcess(new String[]{"./a.out"});
 				
+				if(timelimit>0){
+					//threadProcess = new Thread(new ThreadProcess(process,timelimit));
+					//threadProcess.start();
+				}
 				process.waitProcessFinish();
+				//if(threadProcess.isAlive() && threadProcess!=null)
+					//threadProcess.interrupt();
+				
 				out = process.getReturnProcessOut();
 				success = true;
 			}
@@ -143,7 +156,14 @@ public class Functions {
 					process = new RunProcess(new String[]{"java",aaFile.getFile().getCanonicalPath()+
 							"/CodeCompiler"});
 				
+				if(timelimit>0){
+					//threadProcess = new Thread(new ThreadProcess(process,timelimit));
+					//threadProcess.start();
+				}
 				process.waitProcessFinish();
+				//if(threadProcess.isAlive() && threadProcess!=null)
+					//threadProcess.interrupt();
+				
 				out = process.getReturnProcessOut();
 				success = true;
 			}
@@ -158,8 +178,9 @@ public class Functions {
 	
 	public boolean diffStrings(String in1,String in2,JTextPane textArea) throws Exception{	
 		StyledDocument doc = textArea.getStyledDocument();
-		diff_match_patch dmp = new diff_match_patch();
-		LinkedList<Diff> llDiff =  dmp.diff_main(in1, in2);
+		String[] text1 = in1.split("\n");
+		String[] text2 = in2.split("\n");
+		int lenIn1 = text1.length,lenIn2 = text2.length;
 		boolean lbCorrect = true;
 		
 		Style styleCorrect = textArea.addStyle("Line Correct", null);
@@ -170,17 +191,24 @@ public class Functions {
         StyleConstants.setForeground(styleDefault, Color.black);
         
         doc.insertString(doc.getLength(), "\n-----------------\n",styleDefault);
-		for(int i = 0; i<llDiff.size();i++){
-			if(llDiff.get(i).operation == diff_match_patch.Operation.EQUAL){
-				doc.insertString(doc.getLength(), llDiff.get(i).text,styleCorrect);
-			}else if(llDiff.get(i).operation == diff_match_patch.Operation.INSERT){
-				doc.insertString(doc.getLength(), llDiff.get(i).text,styleWrong);
-				lbCorrect = false;
-			}else if(llDiff.get(i).operation == diff_match_patch.Operation.DELETE){
-				//doc.insertString(doc.getLength(), "("+llDiff.get(i).text+")",styleCorrect);
-				lbCorrect = false;
-			}
-		}
+        int i;
+        for(i = 0;i<lenIn1 || i<lenIn2;i++){
+        	if(text1[i].equals(text2[i]))
+        		doc.insertString(doc.getLength(), text1[i],styleCorrect);
+        	else{
+        		doc.insertString(doc.getLength(), text1[i],styleWrong);
+        		lbCorrect = false;
+        	}
+        }
+        
+        if(lenIn1!=lenIn2)
+        	lbCorrect = false;
+        
+        for(;i<lenIn2;i++){
+        	doc.insertString(doc.getLength(), text1[i],styleWrong);
+        	lbCorrect = false;
+        }
+		
 		return lbCorrect;
 	}
 	
