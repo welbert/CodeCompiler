@@ -43,6 +43,10 @@ public class RunProcess {
 		wrIn = new BufferedWriter(new OutputStreamWriter(stdin));			
 	}
 	
+	public int waitProcessFinish() throws InterruptedException{
+		return process.waitFor();
+	}
+	
 	public void writeStdIn(String asMessage) throws IOException{
 		wrIn.write(asMessage);
 		wrIn.flush();

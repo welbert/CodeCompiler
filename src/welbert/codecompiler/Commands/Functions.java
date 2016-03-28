@@ -97,35 +97,53 @@ public class Functions {
 	 * @return O stdout do Processo
 	 * @throws Exception - Se houver falha ao executar o processo 
 	 */
-	public Object[] runCompileInCode(String asFile, String asCompiler) throws Exception {
+	public Object[] runCompileInCode(Arquivo aaFile, String asCompiler) throws Exception {
 		String out = "";boolean success = false;
 		RunProcess process;
 		
 		switch (asCompiler) {
 		case "gcc":
-			process = new RunProcess(new String[]{asCompiler,asFile});
+			process = new RunProcess(new String[]{asCompiler,aaFile.getAbsolutePath()});
 			out = process.getReturnProcessOut();
 			if(out.trim().equals("")){
-				process = new RunProcess(new String[]{"./a.out"});
+				if(Config.WINDOWS)
+					process = new RunProcess(new String[]{"a.out"});
+				else
+					process = new RunProcess(new String[]{"./a.out"});
+				
+				process.waitProcessFinish();
 				out = process.getReturnProcessOut();
 				success = true;
 			}
 			break;
 		case "g++":
-			process = new RunProcess(new String[]{asCompiler,asFile});
+			process = new RunProcess(new String[]{asCompiler,aaFile.getAbsolutePath()});
 			out = process.getReturnProcessOut();
 			if(out.trim().equals("")){
-				process = new RunProcess(new String[]{"./a.out"});
+				if(Config.WINDOWS)
+					process = new RunProcess(new String[]{"a.out"});
+				else
+					process = new RunProcess(new String[]{"./a.out"});
+				
+				process.waitProcessFinish();
 				out = process.getReturnProcessOut();
 				success = true;
 			}
 			
 			break;		
 		case "java":
-			process = new RunProcess(new String[]{asCompiler+"c",asFile});
+			process = new RunProcess(new String[]{asCompiler+"c",aaFile.getAbsolutePath()});
 			out = process.getReturnProcessOut();
 			if(out.trim().equals("")){
-				process = new RunProcess(new String[]{"java","CodeCompiler"});
+				if(Config.WINDOWS){
+					Runtime.getRuntime().exec(new String[]{"cmd","/c","copy","/Y",
+							aaFile.getPathName()+"\\CodeCompiler.class"});
+					process = new RunProcess(new String[]{"java","CodeCompiler"});
+				}else
+					process = new RunProcess(new String[]{"java",aaFile.getFile().getCanonicalPath()+
+							"/CodeCompiler"});
+				
+				process.waitProcessFinish();
 				out = process.getReturnProcessOut();
 				success = true;
 			}
@@ -155,8 +173,11 @@ public class Functions {
 		for(int i = 0; i<llDiff.size();i++){
 			if(llDiff.get(i).operation == diff_match_patch.Operation.EQUAL){
 				doc.insertString(doc.getLength(), llDiff.get(i).text,styleCorrect);
-			}else{
+			}else if(llDiff.get(i).operation == diff_match_patch.Operation.INSERT){
 				doc.insertString(doc.getLength(), llDiff.get(i).text,styleWrong);
+				lbCorrect = false;
+			}else if(llDiff.get(i).operation == diff_match_patch.Operation.DELETE){
+				//doc.insertString(doc.getLength(), "("+llDiff.get(i).text+")",styleCorrect);
 				lbCorrect = false;
 			}
 		}
@@ -187,9 +208,9 @@ public class Functions {
 			runProcess.destroy();
 		} catch (IOException e) {}
 		try {
-			RunProcess runProcess = new RunProcess("java -version");
+			RunProcess runProcess = new RunProcess("javac -version");
 			tempResult=runProcess.getReturnProcessOut();
-			runProcess = new RunProcess("javac -version");
+			runProcess = new RunProcess("java -version");
 			tempResult=runProcess.getReturnProcessOut();
 			compilers.add("java - "+tempResult.split(Pattern.quote("\""), 2)[1].split("\n",2)[0]);
 			runProcess.destroy();

@@ -10,7 +10,6 @@ import welbert.codecompiler.utils.Arquivo;
 
 import javax.swing.JTextField;
 
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -107,22 +106,22 @@ public class Project extends JInternalFrame
 		
 		comboBoxCompilers = new JComboBox<String>(aascompilers);
 		getContentPane().add(comboBoxCompilers, "cell 2 24 14 1,growx,aligny center");
-		
-			
+				
+		btnSubmit = new JButton("New");
 		if(!asconfigFile.trim().equals("")){
-			btnSubmit = new JButton("Compile");
+			btnSubmit.setText("Compile");
 			btnSubmit.setActionCommand("SUBMIT");
 			btnEdit.setVisible(true);
 			btnClear.setVisible(true);
-		}else{
-			btnSubmit = new JButton("New");
+		}else{			
+			btnSubmit.setText("New");
 			btnSubmit.setActionCommand("NEW");
 			btnEdit.setVisible(false);
 			btnClear.setVisible(false);
 		}
 		btnSubmit.addActionListener(this);
 		getContentPane().add(btnSubmit, "cell 17 24");
-		
+	
 		//Load file
 		if(!asconfigFile.trim().equals("")){
 			try {
@@ -203,7 +202,7 @@ public class Project extends JInternalFrame
 			Object[] loOut;
 			String lsStdOutCode;
 			try {				
-				loOut = myFunctions.runCompileInCode(codeFile.getAbsolutePath(), 
+				loOut = myFunctions.runCompileInCode(codeFile, 
 							comboBoxCompilers.getSelectedItem().toString().split(" ",2)[0]);
 							
 			} catch (Exception ex) {
@@ -219,6 +218,8 @@ public class Project extends JInternalFrame
 					isCorrect = myFunctions.diffStrings(txtpnStdOut.getText(),String.valueOf(loOut[1]),txtpnStdOutcode);
 					if(isCorrect)
 						showMessage("O stdOut e StdOutCode são idênticos.");
+					else
+						showMessage("O stdOut e StdOutCode est�o diferentes.");
 					
 				}catch (Exception ex) {
 					txtpnStdOutcode.setText(lsStdOutCode+"\n-----------------\n"+loOut[1]);
