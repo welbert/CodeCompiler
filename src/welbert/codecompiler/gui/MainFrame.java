@@ -134,7 +134,7 @@ public class MainFrame extends JFrame
 	            
 	            if(res == JFileChooser.APPROVE_OPTION){
 	            	Arquivo file = new Arquivo(fc.getSelectedFile().getCanonicalPath());
-	            	createFrame(file.carregar(),file.getPathName());					
+	            	createFrame(file.carregar(),file.getAbsolutePath());					
 	            }
 			}catch(Exception ex){
 				showMessage("Erro 001 - Falha ao Carregar o arquivo.");

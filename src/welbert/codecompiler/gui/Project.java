@@ -25,6 +25,8 @@ public class Project extends JInternalFrame
 	private JTextField txtProblem;
 	private JTextField txtTimelimit;
 	
+	private JLabel lblProblem;
+	
 	private JTextPane txtpnStdin;
 	private JTextPane txtpnStdOut;
 	private JTextPane txtpnStdOutcode;
@@ -52,7 +54,7 @@ public class Project extends JInternalFrame
 		setBounds(100, 100, 536, 308);
 		getContentPane().setLayout(new MigLayout("", "[grow][95.00,grow][][grow][][][grow][][grow][][][][][][][grow][][]", "[][][][][grow][][][][][grow][grow][][][][][][][][][][][][][][]"));
 		
-		JLabel lblProblem = new JLabel("Problem: ");
+		lblProblem = new JLabel("Problem: ");
 		getContentPane().add(lblProblem, "cell 0 0,alignx trailing");
 		
 		txtProblem = new JTextField();
@@ -140,64 +142,68 @@ public class Project extends JInternalFrame
 		switch (e.getActionCommand()) {
 		
 		case "NEW":
-				String problemName = txtProblem.getText().replace(" ", "");
-				String extension = comboBoxCompilers.getSelectedItem().toString().split(" ",2)[0];
-				String pathFileProblem = myFunctions.getPathFileCode(problemName, extension);
-				if(myFunctions.existsFile(pathFileProblem)){
-					switch (showConfirmDialog("O arquivo "+pathFileProblem+" já existe. Deseja substituir?")) {
-					case JOptionPane.YES_OPTION:
-						try{
-							codeFile = myFunctions.createNewFile(problemName, extension);
-						}catch (Exception ex) {
-							this.log("Erro 102 - Falha ao criar o Arquivo " + codeFile.getPathName(),
-										ex.getMessage());
-							return;
-						}
-						try{
-							myFunctions.openFile(codeFile.getFile());
-						}catch (Exception ex) {
-							this.log("Erro 103 - Falha ao abrir o Arquivo "+codeFile.getPathName(), 
-										ex.getMessage());
-						}
-						try{
-							newConfigFile(codeFile.getPathName(),problemName);
-						}catch (Exception ex) {
-							this.log("Erro 104 - Falha ao criar o Arquivo de configurações", 
-									ex.getMessage());
-						}
-						break;
 
-					default:
-						break;
-					}			
-				}else{
+			if(!validateFields())
+				return;
+			
+			String problemName = txtProblem.getText().replace(" ", "");
+			String extension = comboBoxCompilers.getSelectedItem().toString().split(" ",2)[0];
+			String pathFileProblem = myFunctions.getPathFileCode(problemName, extension);
+			if(myFunctions.existsFile(pathFileProblem)){
+				switch (showConfirmDialog("O arquivo "+pathFileProblem+" já existe. Deseja substituir?")) {
+				case JOptionPane.YES_OPTION:
 					try{
 						codeFile = myFunctions.createNewFile(problemName, extension);
 					}catch (Exception ex) {
-						this.log("Erro 102 - Falha ao criar o Arquivo " + codeFile.getPathName(),
+						this.log("Erro 102 - Falha ao criar o Arquivo " + codeFile.getAbsolutePath(),
 									ex.getMessage());
 						return;
 					}
 					try{
 						myFunctions.openFile(codeFile.getFile());
 					}catch (Exception ex) {
-						this.log("Erro 103 - Falha ao abrir o Arquivo "+codeFile.getPathName(), 
+						this.log("Erro 103 - Falha ao abrir o Arquivo "+codeFile.getAbsolutePath(), 
 									ex.getMessage());
 					}
 					try{
-						newConfigFile(codeFile.getPathName(),problemName);
+						newConfigFile(codeFile.getAbsolutePath(),problemName);
 					}catch (Exception ex) {
 						this.log("Erro 104 - Falha ao criar o Arquivo de configurações", 
 								ex.getMessage());
 					}
+					break;
+
+				default:
+					break;
+				}			
+			}else{
+				try{
+					codeFile = myFunctions.createNewFile(problemName, extension);
+				}catch (Exception ex) {
+					this.log("Erro 102 - Falha ao criar o Arquivo " + codeFile.getAbsolutePath(),
+								ex.getMessage());
+					return;
 				}
+				try{
+					myFunctions.openFile(codeFile.getFile());
+				}catch (Exception ex) {
+					this.log("Erro 103 - Falha ao abrir o Arquivo "+codeFile.getAbsolutePath(), 
+								ex.getMessage());
+				}
+				try{
+					newConfigFile(codeFile.getAbsolutePath(),problemName);
+				}catch (Exception ex) {
+					this.log("Erro 104 - Falha ao criar o Arquivo de configurações", 
+							ex.getMessage());
+				}
+			}
 		break;
 		
 		case "SUBMIT":
 			Object[] loOut;
 			String lsStdOutCode;
 			try {				
-				loOut = myFunctions.runCompileInCode(codeFile.getPathName(), 
+				loOut = myFunctions.runCompileInCode(codeFile.getAbsolutePath(), 
 							comboBoxCompilers.getSelectedItem().toString().split(" ",2)[0]);
 							
 			} catch (Exception ex) {
@@ -235,7 +241,7 @@ public class Project extends JInternalFrame
 			try {
 				myFunctions.openFile(codeFile.getFile());
 			} catch (Exception e1) {
-				this.log("Erro 101 - Falha ao editar "+codeFile.getPathName(), e1.getMessage());
+				this.log("Erro 101 - Falha ao editar "+codeFile.getAbsolutePath(), e1.getMessage());
 			}
 		break;
 		
@@ -282,7 +288,7 @@ public class Project extends JInternalFrame
 		initInterfaceLoaded();
 	}
 	
-	private void newConfigFile(String asConfigFileDir,String asProblemName) throws IOException{
+	private void newConfigFile(String asConfigFileDir,String asProblemName) throws IOException{	
 		String configFileDir = asConfigFileDir.substring(0, asConfigFileDir.lastIndexOf("."))+".wcd";
 		configFile = new Arquivo(configFileDir);
 		configFile.deletarArquivo();
@@ -297,12 +303,22 @@ public class Project extends JInternalFrame
 		initInterfaceLoaded();
 	}
 	
+	private boolean validateFields(){
+		if(txtProblem.getText().trim().equals("")){
+			showMessage("Campo Problem � de preenchimento obrigat�rio.");
+			return false;
+		}
+			
+		return true;
+	}
+	
 	private void initInterfaceLoaded(){
 		btnEdit.setVisible(true);
 		btnClear.setVisible(true);
-		btnSubmit = new JButton("Compile");
+		btnSubmit.setText("Compile");
 		btnSubmit.setActionCommand("SUBMIT");
 		txtProblem.setEnabled(false);
+		this.setTitle(txtProblem.getText());
 	}
 	
 	public void showMessage(String message){

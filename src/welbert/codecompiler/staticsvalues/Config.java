@@ -9,7 +9,7 @@ public class Config {
 	"	return 0;\n}";
 	public static final String templateCpp = "#include <iostream>\nusing namespace std;\n\nint main(void) {\n"+
 	"	// your code goes here\n	return 0;\n}";
-	public static final String templateJava = "import java.util.*;\nimport java.lang.*;import java.io.*;\n\n"
+	public static final String templateJava = "import java.util.*;\nimport java.lang.*;\nimport java.io.*;\n\n"
 			+ "class CodeCompiler{\n	public static void main (String[] args){\n		"
 			+ "// your code goes here\n		}\n}";
 }
