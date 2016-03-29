@@ -48,7 +48,8 @@ public class RunProcess {
 	}
 	
 	public void writeStdIn(String asMessage) throws IOException{
-		wrIn.write(asMessage);
+		//wrIn.write(asMessage);
+		wrIn.write(asMessage + " && echo --EOF--) || echo --EOF--\n");
 		wrIn.flush();
 	}
 	

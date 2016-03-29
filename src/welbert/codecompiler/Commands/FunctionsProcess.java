@@ -82,9 +82,18 @@ public class FunctionsProcess {
 					Runtime.getRuntime().exec(new String[]{"cmd","/c","copy","/Y",
 							aaFile.getPathName()+"\\CodeCompiler.class"});
 					process = new RunProcess(new String[]{"java","CodeCompiler"});
-				}else
-					process = new RunProcess(new String[]{"java",aaFile.getFile().getCanonicalPath()+
-							"/CodeCompiler"});				
+				}else{
+					Runtime.getRuntime().exec(new String[]{
+									"/bin/bash",
+									"-c",
+									aaFile.getPathName()+"/CodeCompiler.class",
+									"."
+					});
+					process = new RunProcess(new String[]{
+							"java",
+							"CodeCompiler"}
+					);
+				}
 				
 				timeLimitExc = timeRunProcess(process,astdIn,timelimit);
 				endTime = System.currentTimeMillis();

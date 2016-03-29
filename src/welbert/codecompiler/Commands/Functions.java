@@ -106,9 +106,9 @@ public class Functions {
         int i;
         for(i = 0;i<lenIn1 && i<lenIn2;i++){
         	if(text1[i].equals(text2[i]))
-        		doc.insertString(doc.getLength(), text1[i]+"\n",styleCorrect);
+        		doc.insertString(doc.getLength(), text2[i]+"\n",styleCorrect);
         	else{
-        		doc.insertString(doc.getLength(), text1[i]+"\n",styleWrong);
+        		doc.insertString(doc.getLength(), text2[i]+"\n",styleWrong);
         		lbCorrect = false;
         	}
         }
