@@ -6,6 +6,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import net.miginfocom.swing.MigLayout;
 import welbert.codecompiler.Commands.Functions;
+import welbert.codecompiler.staticsvalues.Config;
 import welbert.codecompiler.utils.Arquivo;
 
 import javax.swing.JTextField;
@@ -34,7 +35,7 @@ public class Project extends JInternalFrame
 	private JButton btnEdit;
 	private JButton btnClear;
 	
-	private JComboBox<String> comboBoxCompilers;
+	private JComboBox comboBoxCompilers;
 	
 	private Functions myFunctions = new Functions();
 	private Arquivo codeFile;
@@ -104,7 +105,7 @@ public class Project extends JInternalFrame
 		btnClear.setActionCommand("CLEAR");
 		btnClear.addActionListener(this);
 		
-		comboBoxCompilers = new JComboBox<String>(aascompilers);
+		comboBoxCompilers = new JComboBox(aascompilers);
 		getContentPane().add(comboBoxCompilers, "cell 2 24 14 1,growx,aligny center");
 				
 		btnSubmit = new JButton("New");
@@ -127,8 +128,13 @@ public class Project extends JInternalFrame
 			try {
 				loadConfigFile(asconfigFile);
 			} catch (Exception e) {
-				String message = "Erro 105 - Falha ao carregar o arquivo de configuração ou arquivo corrompido.";
-				log(message,e.getMessage());
+				String message;
+				if(Config.WINDOWS)
+					message = "Erro 105 - Falha ao carregar o arquivo de configuraï¿½ï¿½o ou arquivo corrompido.";
+				else
+					message = "Erro 105 - Falha ao carregar o arquivo de configuraÃ§Ã£o ou arquivo corrompido.";
+				
+				log(message,e.toString());
 				this.doDefaultCloseAction();
 				return;
 			}
@@ -149,26 +155,38 @@ public class Project extends JInternalFrame
 			String extension = comboBoxCompilers.getSelectedItem().toString().split(" ",2)[0];
 			String pathFileProblem = myFunctions.getPathFileCode(problemName, extension);
 			if(myFunctions.existsFile(pathFileProblem)){
-				switch (showConfirmDialog("O arquivo "+pathFileProblem+" já existe. Deseja substituir?")) {
+				String message;
+				if(Config.WINDOWS)
+					message = "O arquivo "+pathFileProblem+" jï¿½ existe. Deseja substituir?";
+				else
+					message = "O arquivo "+pathFileProblem+" jÃ¡ existe. Deseja substituir?";
+				
+				switch (showConfirmDialog(message)) {
 				case JOptionPane.YES_OPTION:
 					try{
 						codeFile = myFunctions.createNewFile(problemName, extension);
 					}catch (Exception ex) {
 						this.log("Erro 102 - Falha ao criar o Arquivo " + codeFile.getAbsolutePath(),
-									ex.getMessage());
+									ex.toString());
 						return;
 					}
 					try{
 						myFunctions.openFile(codeFile.getFile());
 					}catch (Exception ex) {
 						this.log("Erro 103 - Falha ao abrir o Arquivo "+codeFile.getAbsolutePath(), 
-									ex.getMessage());
+									ex.toString());
 					}
 					try{
 						newConfigFile(codeFile.getAbsolutePath(),problemName);
 					}catch (Exception ex) {
-						this.log("Erro 104 - Falha ao criar o Arquivo de configuração", 
-								ex.getMessage());
+						if(Config.WINDOWS){
+							this.log("Erro 104 - Falha ao criar o Arquivo de configuraï¿½ï¿½o", 
+									ex.toString());
+						}else{
+							this.log("Erro 104 - Falha ao criar o Arquivo de configuraÃ§Ã£o", 
+									ex.toString());
+						}
+							
 					}
 					break;
 
@@ -180,20 +198,25 @@ public class Project extends JInternalFrame
 					codeFile = myFunctions.createNewFile(problemName, extension);
 				}catch (Exception ex) {
 					this.log("Erro 102 - Falha ao criar o Arquivo " + codeFile.getAbsolutePath(),
-								ex.getMessage());
+								ex.toString());
 					return;
 				}
 				try{
 					myFunctions.openFile(codeFile.getFile());
 				}catch (Exception ex) {
 					this.log("Erro 103 - Falha ao abrir o Arquivo "+codeFile.getAbsolutePath(), 
-								ex.getMessage());
+								ex.toString());
 				}
 				try{
 					newConfigFile(codeFile.getAbsolutePath(),problemName);
 				}catch (Exception ex) {
-					this.log("Erro 104 - Falha ao criar o Arquivo de configuração", 
-							ex.getMessage());
+					if(Config.WINDOWS){
+						this.log("Erro 104 - Falha ao criar o Arquivo de configuraï¿½ï¿½o", 
+								ex.toString());
+					}else{
+						this.log("Erro 104 - Falha ao criar o Arquivo de configuraÃ§Ã£o", 
+								ex.toString());
+					}
 				}
 			}
 		break;
@@ -202,15 +225,25 @@ public class Project extends JInternalFrame
 			Object[] loOut;
 			String lsStdOutCode;
 			try {			
-				
+				int timelimit;
+				try{
+					timelimit = Integer.parseInt(txtTimelimit.getText());
+				}catch(Exception ex){
+					timelimit = 0;
+					txtTimelimit.setText("0");
+				}
 				loOut = myFunctions.runCompileInCode(codeFile, 
 							comboBoxCompilers.getSelectedItem().toString().split(" ",2)[0],
-							0);
-							//Integer.parseInt(txtTimelimit.getText()));
+							timelimit);
 							
 			} catch (Exception ex) {
-				log("Erro 106 - Falha ao executar o compilador ou a executar o código.\n"
-						+ "Mensagem retornada: "+ex.getMessage(),ex.getMessage());
+				if(Config.WINDOWS){
+					log("Erro 106 - Falha ao executar o compilador ou a executar o cï¿½digo.\n"
+							+ "Mensagem retornada: "+ex.toString(),ex.toString());
+				}else{
+					log("Erro 106 - Falha ao executar o compilador ou a executar o cÃ³digo.\n"
+							+ "Mensagem retornada: "+ex.toString(),ex.toString());
+				}
 				return;
 			}	
 						
@@ -218,22 +251,37 @@ public class Project extends JInternalFrame
 			if((boolean)loOut[0]){
 				try{
 					boolean isCorrect;
-					isCorrect = myFunctions.diffStrings(txtpnStdOut.getText(),String.valueOf(loOut[1]),txtpnStdOutcode);
+					isCorrect = myFunctions.diffStrings(txtpnStdOut.getText(),
+							String.valueOf(loOut[1]),
+							Integer.parseInt(loOut[2].toString())/1000,
+							txtpnStdOutcode);
 					if(isCorrect)
-						showMessage("O stdOut e StdOutCode são idênticos.");
+						if(Config.WINDOWS)
+							showMessage("O stdOut e StdOutCode sï¿½o idï¿½nticos.");
+						else
+							showMessage("O stdOut e StdOutCode sÃ£o idÃªnticos.");
 					else
-						showMessage("O stdOut e StdOutCode estão diferentes.");
+						if(Config.WINDOWS)
+							showMessage("O stdOut e StdOutCode estï¿½o diferentes.");
+						else
+							showMessage("O stdOut e StdOutCode estÃ£o diferentes.");
 					
 				}catch (Exception ex) {
-					txtpnStdOutcode.setText(lsStdOutCode+"\n-----------------\n"+loOut[1]);
-					log(ex.getMessage());
+					txtpnStdOutcode.setText(lsStdOutCode+"\n--------"+Integer.parseInt(loOut[2].toString())/1000+
+							"sec's --------\n"+loOut[1]);
+					log(ex.toString());
 				}
 			}else{
 				try{
-					myFunctions.alterTextPane(String.valueOf(loOut[1]), txtpnStdOutcode);
+					String result = String.valueOf(loOut[1]);
+					if(!result.startsWith("TLE"))
+						myFunctions.alterTextPane(result,txtpnStdOutcode);
+					else
+						showMessage(result);
+					
 				}catch (Exception ex) {
-					txtpnStdOutcode.setText(lsStdOutCode+"\n-----------------\n"+loOut[1]);
-					log(ex.getMessage());
+					txtpnStdOutcode.setText(lsStdOutCode+"\n----------------\n"+loOut[1]);
+					log(ex.toString());
 				}
 			}
 			
@@ -245,7 +293,7 @@ public class Project extends JInternalFrame
 			try {
 				myFunctions.openFile(codeFile.getFile());
 			} catch (Exception e1) {
-				this.log("Erro 101 - Falha ao editar "+codeFile.getAbsolutePath(), e1.getMessage());
+				this.log("Erro 101 - Falha ao editar "+codeFile.getAbsolutePath(), e1.toString());
 			}
 		break;
 		
@@ -309,7 +357,10 @@ public class Project extends JInternalFrame
 	
 	private boolean validateFields(){
 		if(txtProblem.getText().trim().equals("")){
-			showMessage("Campo Problem é de preenchimento obrigatório.");
+			if(Config.WINDOWS)
+				showMessage("Campo Problem ï¿½ de preenchimento obrigatï¿½rio.");
+			else
+				showMessage("Campo Problem Ã© de preenchimento obrigatÃ³rio.");
 			return false;
 		}
 			

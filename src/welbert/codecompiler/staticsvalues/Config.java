@@ -12,4 +12,6 @@ public class Config {
 	public static final String templateJava = "import java.util.*;\nimport java.lang.*;\nimport java.io.*;\n\n"
 			+ "class CodeCompiler{\n	public static void main (String[] args){\n		"
 			+ "// your code goes here\n	}\n}";
+	
+	public static final int MAXTIMELIMIT = 30;
 }

@@ -1,7 +1,6 @@
 package welbert.codecompiler.Commands;
 
 import java.awt.Color;
-import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,22 +11,14 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
-import welbert.codecompiler.staticsvalues.Config;
 import welbert.codecompiler.utils.Arquivo;
-import welbert.codecompiler.utils.ThreadProcess;
 
 
 
 public class Functions {
-	boolean Windows = Config.WINDOWS;
 	
 	public void openFile(File afFile) throws Exception{
-		if (Windows) {
-		  String cmd = "rundll32 url.dll,FileProtocolHandler " + afFile.getCanonicalPath();
-		  Runtime.getRuntime().exec(cmd);
-		}else {						
-			Desktop.getDesktop().open(afFile);						
-		}
+		new FunctionsArquivo().openFile(afFile);
 	}
 	
 	/**
@@ -37,54 +28,15 @@ public class Functions {
 	 * @return O caminho do arquivo tratado
 	 */
 	public String getPathFileCode(String asName,String asLinguagem){
-		String path;
-		if(Windows)
-			path = "Problems\\"+asLinguagem+"\\"+asName+"\\";
-		else
-			path = "Problems//"+asLinguagem+"//"+asName+"//";
-		
-		
-		switch (asLinguagem) {
-			case "gcc":
-				return path+asName+".c";
-			case "g++":
-				return path+asName+".cpp";			
-			case "java":
-				return path+asName+".java";
-			case "config":
-				return path+asName+".wcd";
-	
-			default:
-				return path+asName;
-		}
+		return new FunctionsArquivo().getPathFileCode(asName, asLinguagem);
 	}
 	
 	public boolean existsFile(String file){
-		return new File(file).exists();
+		return new FunctionsArquivo().existsFile(file);
 	}
 	
 	public Arquivo createNewFile(String name,String extension) throws IOException{
-		Arquivo file;
-		
-		file = new Arquivo(getPathFileCode(name,extension));
-		file.deletarArquivo();
-		switch (extension) {
-		case "gcc":
-			file.salvar(Config.templateC);
-			break;
-		case "g++":
-			file.salvar(Config.templateCpp);
-			break;
-			
-		case "java":
-			file.salvar(Config.templateJava);
-			break;
-
-		default:
-			break;
-		}
-		
-		return file;
+		return new FunctionsArquivo().createNewFile(name, extension);
 		
 	}
 	
@@ -96,87 +48,14 @@ public class Functions {
 	 * @throws Exception - Se houver falha ao executar o processo 
 	 */
 	public Object[] runCompileInCode(Arquivo aaFile, String asCompiler,int timelimit) throws Exception {
-		String out = "";boolean success = false;
-		RunProcess process;
-		Thread threadProcess = null;
-		
-		switch (asCompiler) {
-		case "gcc":
-			process = new RunProcess(new String[]{asCompiler,aaFile.getAbsolutePath()});
-			out = process.getReturnProcessOut();
-			if(out.trim().equals("")){
-				if(Config.WINDOWS)
-					process = new RunProcess(new String[]{"a.exe"});
-				else
-					process = new RunProcess(new String[]{"./a.out"});
-				
-				if(timelimit>0){
-					//threadProcess = new Thread(new ThreadProcess(process,timelimit));
-					//threadProcess.start();
-				}
-				process.waitProcessFinish();
-				//if(threadProcess.isAlive() && threadProcess!=null)
-					//threadProcess.interrupt();
-				
-				out = process.getReturnProcessOut();
-				success = true;
-			}
-			break;
-		case "g++":
-			process = new RunProcess(new String[]{asCompiler,aaFile.getAbsolutePath()});
-			out = process.getReturnProcessOut();
-			if(out.trim().equals("")){
-				if(Config.WINDOWS)
-					process = new RunProcess(new String[]{"a.exe"});
-				else
-					process = new RunProcess(new String[]{"./a.out"});
-				
-				if(timelimit>0){
-					//threadProcess = new Thread(new ThreadProcess(process,timelimit));
-					//threadProcess.start();
-				}
-				process.waitProcessFinish();
-				//if(threadProcess.isAlive() && threadProcess!=null)
-					//threadProcess.interrupt();
-				
-				out = process.getReturnProcessOut();
-				success = true;
-			}
-			
-			break;		
-		case "java":
-			process = new RunProcess(new String[]{asCompiler+"c",aaFile.getAbsolutePath()});
-			out = process.getReturnProcessOut();
-			if(out.trim().equals("")){
-				if(Config.WINDOWS){
-					Runtime.getRuntime().exec(new String[]{"cmd","/c","copy","/Y",
-							aaFile.getPathName()+"\\CodeCompiler.class"});
-					process = new RunProcess(new String[]{"java","CodeCompiler"});
-				}else
-					process = new RunProcess(new String[]{"java",aaFile.getFile().getCanonicalPath()+
-							"/CodeCompiler"});
-				
-				if(timelimit>0){
-					//threadProcess = new Thread(new ThreadProcess(process,timelimit));
-					//threadProcess.start();
-				}
-				process.waitProcessFinish();
-				//if(threadProcess.isAlive() && threadProcess!=null)
-					//threadProcess.interrupt();
-				
-				out = process.getReturnProcessOut();
-				success = true;
-			}
-			
-			break;
-
-		default:
-			break;
-		}
-		return new Object[]{success,out};
+		return new FunctionsProcess().runCompileInCode(aaFile, asCompiler, timelimit);
 	}
 	
-	public boolean diffStrings(String in1,String in2,JTextPane textArea) throws Exception{	
+	public boolean timeRunProcess(RunProcess process,int timelimit) throws InterruptedException{
+		return new FunctionsProcess().timeRunProcess(process, timelimit);
+	}
+	
+	public boolean diffStrings(String in1,String in2,int time,JTextPane textArea) throws Exception{	
 		StyledDocument doc = textArea.getStyledDocument();
 		String[] text1 = in1.split("\n");
 		String[] text2 = in2.split("\n");
@@ -190,13 +69,13 @@ public class Functions {
         Style styleDefault = textArea.addStyle("Line Default", null);
         StyleConstants.setForeground(styleDefault, Color.black);
         
-        doc.insertString(doc.getLength(), "\n-----------------\n",styleDefault);
+        doc.insertString(doc.getLength(), "\n--------"+time+"sec's --------\n",styleDefault);
         int i;
-        for(i = 0;i<lenIn1 || i<lenIn2;i++){
+        for(i = 0;i<lenIn1 && i<lenIn2;i++){
         	if(text1[i].equals(text2[i]))
-        		doc.insertString(doc.getLength(), text1[i],styleCorrect);
+        		doc.insertString(doc.getLength(), text1[i]+"\n",styleCorrect);
         	else{
-        		doc.insertString(doc.getLength(), text1[i],styleWrong);
+        		doc.insertString(doc.getLength(), text1[i]+"\n",styleWrong);
         		lbCorrect = false;
         	}
         }
@@ -216,7 +95,7 @@ public class Functions {
 		StyledDocument doc = textArea.getStyledDocument();
 		Style styleDefault = textArea.addStyle("Line Default", null);
         StyleConstants.setForeground(styleDefault, Color.black);
-        doc.insertString(doc.getLength(), "\n-----------------\n",styleDefault);
+        doc.insertString(doc.getLength(), "\n----------------\n",styleDefault);
         doc.insertString(doc.getLength(), text,styleDefault);
 	}
 	
