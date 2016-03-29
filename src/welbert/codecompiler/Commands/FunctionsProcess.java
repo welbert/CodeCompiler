@@ -16,12 +16,13 @@ public class FunctionsProcess {
 	 * 
 	 * @param aaFile - Arquivo do código a ser compilado e executado
 	 * @param asCompiler - Compilador a ser usado (gcc,g++,java)
+	 * @param astdin - Valores de Entrada
 	 * @param timelimit - Timelimit do código
 	 * @return Object[] - [0] Se houve sucesso na compilação/execução; [1] Mensagem retornada; [2] Duração do processo
 	 * @throws Exception
 	 * @author Welbert Serra
 	 */
-	public Object[] runCompileInCode(Arquivo aaFile, String asCompiler,int timelimit) throws Exception {
+	public Object[] runCompileInCode(Arquivo aaFile, String asCompiler,String astdIn,int timelimit) throws Exception {
 		String out = "";
 		boolean success = false, timeLimitExc = false;
 		RunProcess process;
@@ -37,7 +38,7 @@ public class FunctionsProcess {
 				else
 					process = new RunProcess(new String[]{"./a.out"});
 				
-				timeLimitExc = timeRunProcess(process,timelimit);
+				timeLimitExc = timeRunProcess(process,astdIn,timelimit);
 				endTime = System.currentTimeMillis();
 				
 				if(timeLimitExc){
@@ -59,7 +60,7 @@ public class FunctionsProcess {
 				else
 					process = new RunProcess(new String[]{"./a.out"});
 				
-				timeLimitExc = timeRunProcess(process,timelimit);
+				timeLimitExc = timeRunProcess(process,astdIn,timelimit);
 				endTime = System.currentTimeMillis();
 				
 				if(timeLimitExc){
@@ -85,7 +86,7 @@ public class FunctionsProcess {
 					process = new RunProcess(new String[]{"java",aaFile.getFile().getCanonicalPath()+
 							"/CodeCompiler"});				
 				
-				timeLimitExc = timeRunProcess(process,timelimit);
+				timeLimitExc = timeRunProcess(process,astdIn,timelimit);
 				endTime = System.currentTimeMillis();
 				
 				if(timeLimitExc){
@@ -113,14 +114,18 @@ public class FunctionsProcess {
 	 * Faz a lógica para parar o processo
 	 * 
 	 * @param process - Processo a ser controlado
+	 * @param stdin - Texto de entrada
 	 * @param timelimit - Tempo limite para executar
 	 * @return boolean - Se estourou o tempo
 	 * @throws InterruptedException
 	 * @author Welbert Serra
+	 * @throws Exception 
 	 */
-	private boolean timeRunProcess(RunProcess process,int timelimit) throws InterruptedException{
+	private boolean timeRunProcess(RunProcess process,String stdin,int timelimit) throws Exception{
 		timeLimitExc=false;
 		Thread threadProcess = null;
+		
+		process.writeStdIn(stdin);
 		
 		if(timelimit<1)
 			timelimit = Config.MAXTIMELIMIT;

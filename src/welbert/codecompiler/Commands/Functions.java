@@ -67,13 +67,14 @@ public class Functions {
 	 * 
 	 * @param aaFile - Arquivo do código a ser compilado e executado
 	 * @param asCompiler - Compilador a ser usado (gcc,g++,java)
+	 * @param stdin - Texto de entrada
 	 * @param timelimit - Timelimit do código
 	 * @return Object[] - [0] Se houve sucesso na compilação/execução; [1] Mensagem retornada; [2] Duração do processo
 	 * @throws Exception
 	 * @author Welbert Serra
 	 */
-	public Object[] runCompileInCode(Arquivo aaFile, String asCompiler,int timelimit) throws Exception {
-		return new FunctionsProcess().runCompileInCode(aaFile, asCompiler, timelimit);
+	public Object[] runCompileInCode(Arquivo aaFile, String asCompiler,String stdin,int timelimit) throws Exception {
+		return new FunctionsProcess().runCompileInCode(aaFile, asCompiler,stdin, timelimit);
 	}	
 	
 	/**

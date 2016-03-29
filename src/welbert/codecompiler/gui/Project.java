@@ -277,6 +277,7 @@ public class Project extends JInternalFrame
 				}
 				loOut = myFunctions.runCompileInCode(codeFile, 
 							comboBoxCompilers.getSelectedItem().toString().split(" ",2)[0],
+							txtpnStdin.getText(),
 							timelimit);
 							
 			} catch (Exception ex) {
