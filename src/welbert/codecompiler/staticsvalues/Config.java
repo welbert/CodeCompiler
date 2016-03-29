@@ -1,7 +1,7 @@
 package welbert.codecompiler.staticsvalues;
 
 public class Config {
-	public static final String version = "0.7";
+	public static final String version = "0.8";
 	public static final boolean log = true;
 	public static boolean WINDOWS = System.getProperty("os.name").contains("Windows");
 	

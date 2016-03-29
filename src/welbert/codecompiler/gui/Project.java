@@ -18,6 +18,10 @@ import java.io.IOException;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JTextPane;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 @SuppressWarnings("serial")
 public class Project extends JInternalFrame 
@@ -35,11 +39,13 @@ public class Project extends JInternalFrame
 	private JButton btnEdit;
 	private JButton btnClear;
 	
-	private JComboBox comboBoxCompilers;
+	private JComboBox<String> comboBoxCompilers;
 	
 	private Functions myFunctions = new Functions();
 	private Arquivo codeFile;
 	private Arquivo configFile;
+	private JButton btnSave;
+	private JLabel label;
 
 	/**
 	 * Create the frame.
@@ -51,77 +57,114 @@ public class Project extends JInternalFrame
 		setMaximizable(true);
 		setTitle(asProject);
 		setResizable(true);
-		setBounds(100, 100, 536, 308);
-		getContentPane().setLayout(new MigLayout("", "[grow][95.00,grow][][grow][][][grow][][grow][][][][][][][grow][][]", "[][][][][grow][][][][][grow][grow][][][][][][][][][][][][][][]"));
+		setBounds(100, 100, 650, 400);
+		getContentPane().setLayout(new MigLayout("", "[grow][95.00,grow][][grow][][][grow][][][][][grow][][][][][][][][grow][][][]", "[][][][][grow][][][][][grow][grow][][][][][][][][][][][][][][]"));
 		
 		lblProblem = new JLabel("Problem: ");
 		getContentPane().add(lblProblem, "cell 0 0,alignx trailing");
 		
 		txtProblem = new JTextField();
-		getContentPane().add(txtProblem, "cell 1 0,growx,aligny center");
+		txtProblem.setToolTipText("Nome do problema");
+		getContentPane().add(txtProblem, "cell 1 0 6 1,growx,aligny center");
 		txtProblem.setColumns(10);
 		
 		JLabel lblTimelimit = new JLabel("Time Limit: ");
-		getContentPane().add(lblTimelimit, "cell 4 0");
+		getContentPane().add(lblTimelimit, "cell 10 0 2 1,alignx right,aligny center");
 		
 		txtTimelimit = new JTextField();
-		getContentPane().add(txtTimelimit, "cell 6 0 3 1,growx");
+		txtTimelimit.setToolTipText("Tempo limite em segundos de execução do código. 0 = "+Config.MAXTIMELIMIT+"s");
+		txtTimelimit.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent ev) {
+				if(ev.getKeyCode()<48 || ev.getKeyCode()>57){
+					if(txtTimelimit.getText().length()>0)
+						txtTimelimit.setText(txtTimelimit.getText().substring(0, txtTimelimit.getText().length()-1));
+				}					
+			}
+		});
+		getContentPane().add(txtTimelimit, "cell 12 0,alignx left,aligny center");
 		txtTimelimit.setColumns(10);
+		
+		btnSave = new JButton("Save");
+		btnSave.setToolTipText("Salva as novas configurações");
+		btnSave.setActionCommand("SAVE");
+		btnSave.setVisible(false);
+		btnSave.addActionListener(this);
+		getContentPane().add(btnSave, "cell 16 0");
+		
+		label = new JLabel("?");
+		label.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				showMessage("Matenha o mouse sobre os campos para mais informações");
+			}
+		});
+		label.setToolTipText("Matenha o mouse sobre os campos para mais informações");
+		
+		getContentPane().add(label, "cell 22 0,alignx right");
 		
 		JLabel lblStdout = new JLabel("stdout");
 		getContentPane().add(lblStdout, "cell 0 2");
 		
 		JLabel lblStdoutcode = new JLabel("stdoutCode");
-		getContentPane().add(lblStdoutcode, "cell 9 2");
+		getContentPane().add(lblStdoutcode, "cell 12 2");
 		
 		
 		txtpnStdOut = new JTextPane();
+		txtpnStdOut.setToolTipText("Saída esperada do código");
 		JScrollPane scrollOut = new JScrollPane();
 		scrollOut.setViewportView(txtpnStdOut);
 		getContentPane().add(scrollOut, "cell 0 3 2 5,grow");
 		
 		txtpnStdOutcode = new JTextPane();
+		txtpnStdOutcode.setToolTipText("Saída gerada pela compilação ou execução do código");
 		txtpnStdOutcode.setEditable(false);
 		JScrollPane scrolloutcode = new JScrollPane();
 		scrolloutcode.setViewportView(txtpnStdOutcode);
-		getContentPane().add(scrolloutcode, "cell 3 4 15 16,grow");
+		getContentPane().add(scrolloutcode, "cell 3 4 20 16,grow");
 		
 		JLabel lblStdin = new JLabel("stdin");		
 		getContentPane().add(lblStdin, "cell 0 8");
 		
 		txtpnStdin = new JTextPane();
+		txtpnStdin.setToolTipText("Valores de entrada para o código");
 		JScrollPane scrollIn = new JScrollPane();
 		scrollIn.setViewportView(txtpnStdin);
 		getContentPane().add(scrollIn, "cell 0 9 2 16,grow");
 		
 		btnEdit = new JButton("Edit");
+		btnEdit.setToolTipText("Abri o editor padrão para o código selecionado");
 		btnEdit.setActionCommand("EDIT");
 		btnEdit.addActionListener(this);		
-		getContentPane().add(btnEdit, "cell 17 22");
 		
 		
 		btnClear = new JButton("Clear");
-		getContentPane().add(btnClear, "cell 9 22");
+		btnClear.setToolTipText("Limpa o stdoutCode");
+		getContentPane().add(btnClear, "cell 12 22,alignx center");
 		btnClear.setActionCommand("CLEAR");
 		btnClear.addActionListener(this);
+		getContentPane().add(btnEdit, "cell 22 22");
 		
-		comboBoxCompilers = new JComboBox(aascompilers);
-		getContentPane().add(comboBoxCompilers, "cell 2 24 14 1,growx,aligny center");
+		comboBoxCompilers = new JComboBox<String>(aascompilers);
+		comboBoxCompilers.setToolTipText("Seleciona o compilador");
+		getContentPane().add(comboBoxCompilers, "cell 2 24 18 1,growx,aligny center");
 				
-		btnSubmit = new JButton("New");
+		btnSubmit = new JButton("New");		
 		if(!asconfigFile.trim().equals("")){
 			btnSubmit.setText("Compile");
 			btnSubmit.setActionCommand("SUBMIT");
 			btnEdit.setVisible(true);
 			btnClear.setVisible(true);
+			btnSubmit.setToolTipText("Compila e executa o código");
 		}else{			
 			btnSubmit.setText("New");
 			btnSubmit.setActionCommand("NEW");
 			btnEdit.setVisible(false);
 			btnClear.setVisible(false);
+			btnSubmit.setToolTipText("Cria um novo arquivo de configuração e Código");
 		}
 		btnSubmit.addActionListener(this);
-		getContentPane().add(btnSubmit, "cell 17 24");
+		getContentPane().add(btnSubmit, "cell 22 24");
 	
 		//Load file
 		if(!asconfigFile.trim().equals("")){
@@ -297,6 +340,21 @@ public class Project extends JInternalFrame
 			}
 		break;
 		
+		case "SAVE":
+			String problemName1 = txtProblem.getText().replace(" ", "");
+			try{
+				newConfigFile(codeFile.getAbsolutePath(),problemName1);
+			}catch (Exception ex) {
+				if(Config.WINDOWS){
+					this.log("Erro 104 - Falha ao criar o Arquivo de configura��o", 
+							ex.toString());
+				}else{
+					this.log("Erro 104 - Falha ao criar o Arquivo de configuração", 
+							ex.toString());
+				}
+			}
+			break;
+		
 		case "CLEAR":
 			txtpnStdOutcode.setText("");
 			break;
@@ -370,9 +428,11 @@ public class Project extends JInternalFrame
 	private void initInterfaceLoaded(){
 		btnEdit.setVisible(true);
 		btnClear.setVisible(true);
+		btnSave.setVisible(true);
 		btnSubmit.setText("Compile");
 		btnSubmit.setActionCommand("SUBMIT");
 		txtProblem.setEnabled(false);
+		comboBoxCompilers.setEnabled(false);
 		this.setTitle(txtProblem.getText());
 	}
 	

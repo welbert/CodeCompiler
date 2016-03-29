@@ -1,6 +1,5 @@
 package welbert.codecompiler.gui;
 
-import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -30,27 +29,33 @@ public class About extends JFrame {
 		setTitle("About");
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 232, 182);
+		setBounds(100, 100, 313, 137);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
+		contentPane.setLayout(null);
 		
 		JLabel lblCodecompiler = new JLabel("CodeCompiler");
-		lblCodecompiler.setHorizontalAlignment(SwingConstants.CENTER);
-		contentPane.add(lblCodecompiler, BorderLayout.NORTH);
+		lblCodecompiler.setBounds(96, 0, 108, 26);
+		lblCodecompiler.setHorizontalAlignment(SwingConstants.LEFT);
+		contentPane.add(lblCodecompiler);
+		
+		JLabel lblVersion = new JLabel("Version: "+Config.version);
+		lblVersion.setBounds(32, 24, 98, 26);
+		lblVersion.setHorizontalAlignment(SwingConstants.LEFT);
+		contentPane.add(lblVersion);
+		
+		JLabel lblSite = new JLabel("Site: welbert.github.io/CodeCompiler");
+		lblSite.setBounds(32, 49, 277, 26);
+		lblSite.setHorizontalAlignment(SwingConstants.LEFT);
+		contentPane.add(lblSite);
 		
 		JLabel lblByWelbertSerra = new JLabel("by Welbert Serra");
+		lblByWelbertSerra.setBounds(198, 87, 113, 15);
+		lblByWelbertSerra.setVerticalAlignment(SwingConstants.BOTTOM);
 		lblByWelbertSerra.setFont(new Font("Dialog", Font.ITALIC, 12));
-		lblByWelbertSerra.setHorizontalAlignment(SwingConstants.RIGHT);
-		contentPane.add(lblByWelbertSerra, BorderLayout.SOUTH);
-		
-		JLabel lblVersion = new JLabel("Version:");
-		lblVersion.setHorizontalAlignment(SwingConstants.LEFT);
-		contentPane.add(lblVersion, BorderLayout.WEST);
-		
-		JLabel lblNversion = new JLabel(Config.version);
-		contentPane.add(lblNversion, BorderLayout.CENTER);
+		lblByWelbertSerra.setHorizontalAlignment(SwingConstants.LEFT);
+		contentPane.add(lblByWelbertSerra);
 	}
 
 }

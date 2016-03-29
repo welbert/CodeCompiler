@@ -21,6 +21,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.awt.*;
+import javax.swing.JLabel;
  
 
 @SuppressWarnings("serial")
@@ -40,7 +41,7 @@ public class MainFrame extends JFrame
     }
  
     private MainFrame() {
-        super("CodeCompiler");
+        super(".:CodeCompiler:.");
         
         try{
         	log = new Arquivo("log.err");
@@ -56,14 +57,19 @@ public class MainFrame extends JFrame
                   screenSize.height - inset*2);
  
         //Set up the GUI.
-        desktop = new JDesktopPane(); //a specialized layered pane
+        desktop = new JDesktopPane();
         setContentPane(desktop);
         setJMenuBar(createMenuBarFile());
         
         createFrame();
-        
-        //Make dragging a little faster but perhaps uglier.
+ 
         desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
+        
+        JLabel lblAuthor = new JLabel("Developed by Welbert Serra");
+        lblAuthor.setForeground(Color.LIGHT_GRAY);
+        lblAuthor.setFont(new Font("Dialog", Font.BOLD | Font.ITALIC, 10));
+        lblAuthor.setBounds(0, 0, 169, 15);
+        desktop.add(lblAuthor);
     }
  
     protected JMenuBar createMenuBarFile() {
@@ -78,16 +84,16 @@ public class MainFrame extends JFrame
         JMenuItem menuItem = new JMenuItem("New...");
         menuItem.setMnemonic(KeyEvent.VK_N);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_N, ActionEvent.ALT_MASK));
+                KeyEvent.VK_N, ActionEvent.CTRL_MASK));
         menuItem.setActionCommand("NEW");
         menuItem.addActionListener(this);
         menu.add(menuItem);
         
         //Set up the second menu item.
         menuItem = new JMenuItem("Load...");
-        menuItem.setMnemonic(KeyEvent.VK_A);
+        menuItem.setMnemonic(KeyEvent.VK_L);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_A, ActionEvent.ALT_MASK));
+                KeyEvent.VK_L, ActionEvent.CTRL_MASK));
         menuItem.setActionCommand("LOAD");
         menuItem.addActionListener(this);
         menu.add(menuItem);
@@ -96,7 +102,7 @@ public class MainFrame extends JFrame
         menuItem = new JMenuItem("About...");
         menuItem.setMnemonic(KeyEvent.VK_H);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_H, ActionEvent.ALT_MASK));
+                KeyEvent.VK_H, ActionEvent.CTRL_MASK));
         menuItem.setActionCommand("ABOUT");
         menuItem.addActionListener(this);
         menu.add(menuItem);
@@ -105,7 +111,7 @@ public class MainFrame extends JFrame
         menuItem = new JMenuItem("Exit...");
         menuItem.setMnemonic(KeyEvent.VK_Q);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_Q, ActionEvent.ALT_MASK));
+                KeyEvent.VK_Q, ActionEvent.CTRL_MASK));
         menuItem.setActionCommand("EXIT");
         menuItem.addActionListener(this);
         menu.add(menuItem);
@@ -113,7 +119,9 @@ public class MainFrame extends JFrame
         return menuBar;
     }
  
-    //React to menu selections.
+    /**
+     * AÃ§Ãµes do menu
+     */
     public void actionPerformed(ActionEvent e) {
     	switch (e.getActionCommand()) {
 		case "NEW":
@@ -157,11 +165,15 @@ public class MainFrame extends JFrame
     //Create a new internal frame.
     protected void createFrame() {
     	if(compilers.length < 1){
-    		showMessage("Não há compiladores instalados (gcc,g++,javac)");
+    		if(Config.WINDOWS)
+    			showMessage("Nï¿½o hï¿½ compiladores instalados (gcc,g++,javac)");
+    		else
+    			showMessage("NÃ£o hÃ¡ compiladores instalados (gcc,g++,javac)");
+    		
     		return;
     	}
         Project frame = new Project("New Project", compilers,"");
-        frame.setVisible(true); //necessary as of 1.3
+        frame.setVisible(true);
         desktop.add(frame);
         try {
             frame.setSelected(true);
@@ -170,11 +182,15 @@ public class MainFrame extends JFrame
     
     protected void createFrame(String project, String configDir) {
     	if(compilers.length < 1){
-    		showMessage("Não há compiladores instalados (gcc,g++,javac)");
+    		if(Config.WINDOWS)
+    			showMessage("Nï¿½o hï¿½ compiladores instalados (gcc,g++,javac)");
+    		else
+    			showMessage("NÃ£o hÃ¡ compiladores instalados (gcc,g++,javac)");
+    		
     		return;
     	}
         Project frame = new Project(project, compilers,configDir);
-        frame.setVisible(true); //necessary as of 1.3
+        frame.setVisible(true);
         desktop.add(frame);
         try {
             frame.setSelected(true);
@@ -186,30 +202,21 @@ public class MainFrame extends JFrame
         frame.setVisible(true);
     }
  
-    //Quit the application.
     protected void quit() {
         System.exit(0);
     }
  
-    /**
-     * Create the GUI and show it.  For thread safety,
-     * this method should be invoked from the
-     * event-dispatching thread.
-     */
+
     private static void createAndShowGUI() {
  
-        //Create and set up the window.
         MainFrame frame = MainFrame.getInstance();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
  
-        //Display the window.
         frame.setVisible(true);
     }
  
     public static void main(String[] args) {
-    	
-        //Schedule a job for the event-dispatching thread:
-        //creating and showing this application's GUI.
+
         javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 createAndShowGUI();

@@ -3,8 +3,6 @@ package welbert.codecompiler.Commands;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.regex.Pattern;
 
 import javax.swing.JTextPane;
 import javax.swing.text.Style;
@@ -17,44 +15,78 @@ import welbert.codecompiler.utils.Arquivo;
 
 public class Functions {
 	
+	/**
+	 * Abri o arquivo no programa padrão da extensão
+	 * 
+	 * @param afFile - File que se deseja abrir
+	 * @throws Exception
+	 * @author Welbert Serra
+	 */
 	public void openFile(File afFile) throws Exception{
 		new FunctionsArquivo().openFile(afFile);
 	}
 	
 	/**
+	 * Obtem o nome do caminho com o arquivo baseado no compilador
+	 * 
+	 * @param asName - Nome do arquivo
+	 * @param asLinguagem - Nome do Compilador usado (gcc,g++,java)
+	 * @return Caminho do Arquivo
 	 * @author Welbert Serra
-	 * @param asName - Nome do Arquivo
-	 * @param asLinguagem - Linguagem de programação para determinar a extensão
-	 * @return O caminho do arquivo tratado
 	 */
 	public String getPathFileCode(String asName,String asLinguagem){
 		return new FunctionsArquivo().getPathFileCode(asName, asLinguagem);
 	}
 	
+	/**
+	 * 
+	 * @param file - Caminho do arquivo
+	 * @return true - se existe o arquivo ; false - se não existe o arquivo
+	 * @author Welbert Serra
+	 */
 	public boolean existsFile(String file){
 		return new FunctionsArquivo().existsFile(file);
 	}
 	
+	/**
+	 * Cria um novo arquivo baseado no compilador e usando o template de Config
+	 * 
+	 * @param name - Nome do arquivo
+	 * @param extension - Compilador a ser usado (gcc,g++,java)
+	 * @return Arquivo
+	 * @throws IOException
+	 * @author Welbert Serra
+	 */
 	public Arquivo createNewFile(String name,String extension) throws IOException{
 		return new FunctionsArquivo().createNewFile(name, extension);
 		
 	}
 	
 	/**
+	 * Função responsável pela execução e compilação do código
+	 * 
+	 * @param aaFile - Arquivo do código a ser compilado e executado
+	 * @param asCompiler - Compilador a ser usado (gcc,g++,java)
+	 * @param timelimit - Timelimit do código
+	 * @return Object[] - [0] Se houve sucesso na compilação/execução; [1] Mensagem retornada; [2] Duração do processo
+	 * @throws Exception
 	 * @author Welbert Serra
-	 * @param asFile - Nome do Arquivo
-	 * @param asCompiler - Compilador a ser usado
-	 * @return O stdout do Processo
-	 * @throws Exception - Se houver falha ao executar o processo 
 	 */
 	public Object[] runCompileInCode(Arquivo aaFile, String asCompiler,int timelimit) throws Exception {
 		return new FunctionsProcess().runCompileInCode(aaFile, asCompiler, timelimit);
-	}
+	}	
 	
-	public boolean timeRunProcess(RunProcess process,int timelimit) throws InterruptedException{
-		return new FunctionsProcess().timeRunProcess(process, timelimit);
-	}
-	
+	/**
+	 * Compara dois texto, printando o excesso do segundo texto e retornando se são iguais
+	 * 
+	 * @param in1 - Texto que será comparado com o primeiro
+	 * @param in2 - Texto que será comparado com o segundo
+	 * @param time - Tempo que levou o processo executando
+	 * @param textArea - JtextPane que sofrerá a mudança
+	 * @return true: Os textos são identicos; false: Os textos são diferentes
+	 * @throws Exception
+	 * @author Welbert Serra
+	 */
 	public boolean diffStrings(String in1,String in2,int time,JTextPane textArea) throws Exception{	
 		StyledDocument doc = textArea.getStyledDocument();
 		String[] text1 = in1.split("\n");
@@ -91,6 +123,14 @@ public class Functions {
 		return lbCorrect;
 	}
 	
+	/**
+	 * Altera o JTextPane inserindo o novo texto
+	 * 
+	 * @param text - Texto para inserir
+	 * @param textArea - JTextPane que sofrerá a mudança
+	 * @throws Exception
+	 * @author Welbert Serra 
+	 */
 	public void alterTextPane(String text,JTextPane textArea) throws Exception{
 		StyledDocument doc = textArea.getStyledDocument();
 		Style styleDefault = textArea.addStyle("Line Default", null);
@@ -99,37 +139,12 @@ public class Functions {
         doc.insertString(doc.getLength(), text,styleDefault);
 	}
 	
- 	public String[] getCompilers(){
-		String tempResult;
-		ArrayList<String> compilers = new ArrayList<String>();
-		try {
-			RunProcess runProcess = new RunProcess("gcc --version");
-			tempResult=runProcess.getReturnProcessOut();
-			compilers.add("gcc - "+tempResult.split(Pattern.quote(")"), 2)[1].split("\n",2)[0]);
-			runProcess.destroy();
-		} catch (IOException e) {}
-		try {
-			RunProcess runProcess = new RunProcess("g++ --version");
-			tempResult=runProcess.getReturnProcessOut();
-			compilers.add("g++ - "+tempResult.split(Pattern.quote(")"), 2)[1].split("\n",2)[0]);
-			runProcess.destroy();
-		} catch (IOException e) {}
-		try {
-			RunProcess runProcess = new RunProcess("javac -version");
-			tempResult=runProcess.getReturnProcessOut();
-			runProcess = new RunProcess("java -version");
-			tempResult=runProcess.getReturnProcessOut();
-			compilers.add("java - "+tempResult.split(Pattern.quote("\""), 2)[1].split("\n",2)[0]);
-			runProcess.destroy();
-		} catch (Exception e) {}
-		if(compilers.isEmpty())
-			return new String[]{};
-		else{
-			String[] result = new String[compilers.size()];
-			for(int i = 0;i<compilers.size();i++)
-				result[i] = compilers.get(i).toString();
-			
-			return result;
-		}
+	/**
+	 * Retorna se na maquina foi encontrado o (gcc/g++/java)
+	 * 
+	 * @return Retorna se na maquina foi encontrado o (gcc/g++/java)
+	 */
+	public String[] getCompilers(){
+		return new FunctionsProcess().getCompilers();
 	}
 }
