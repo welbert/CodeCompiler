@@ -102,7 +102,7 @@ public class MainFrame extends JFrame
         menuItem = new JMenuItem("About...");
         menuItem.setMnemonic(KeyEvent.VK_H);
         menuItem.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_H, ActionEvent.CTRL_MASK));
+        		KeyEvent.VK_F1, 0));
         menuItem.setActionCommand("ABOUT");
         menuItem.addActionListener(this);
         menu.add(menuItem);
@@ -165,11 +165,7 @@ public class MainFrame extends JFrame
     //Create a new internal frame.
     protected void createFrame() {
     	if(compilers.length < 1){
-    		if(Config.WINDOWS)
-    			showMessage("N�o h� compiladores instalados (gcc,g++,javac)");
-    		else
-    			showMessage("Não há compiladores instalados (gcc,g++,javac)");
-    		
+    		showMessage("Não há compiladores instalados (gcc,g++,javac)");    		
     		return;
     	}
         Project frame = new Project("New Project", compilers,"");
@@ -182,11 +178,7 @@ public class MainFrame extends JFrame
     
     protected void createFrame(String project, String configDir) {
     	if(compilers.length < 1){
-    		if(Config.WINDOWS)
-    			showMessage("N�o h� compiladores instalados (gcc,g++,javac)");
-    		else
-    			showMessage("Não há compiladores instalados (gcc,g++,javac)");
-    		
+    		showMessage("Não há compiladores instalados (gcc,g++,javac)");    		
     		return;
     	}
         Project frame = new Project(project, compilers,configDir);

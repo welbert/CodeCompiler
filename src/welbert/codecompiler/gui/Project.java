@@ -172,10 +172,7 @@ public class Project extends JInternalFrame
 				loadConfigFile(asconfigFile);
 			} catch (Exception e) {
 				String message;
-				if(Config.WINDOWS)
-					message = "Erro 105 - Falha ao carregar o arquivo de configura��o ou arquivo corrompido.";
-				else
-					message = "Erro 105 - Falha ao carregar o arquivo de configuração ou arquivo corrompido.";
+				message = "Erro 105 - Falha ao carregar o arquivo de configuração ou arquivo corrompido.";
 				
 				log(message,e.toString());
 				this.doDefaultCloseAction();
@@ -199,10 +196,7 @@ public class Project extends JInternalFrame
 			String pathFileProblem = myFunctions.getPathFileCode(problemName, extension);
 			if(myFunctions.existsFile(pathFileProblem)){
 				String message;
-				if(Config.WINDOWS)
-					message = "O arquivo "+pathFileProblem+" j� existe. Deseja substituir?";
-				else
-					message = "O arquivo "+pathFileProblem+" já existe. Deseja substituir?";
+				message = "O arquivo "+pathFileProblem+" já existe. Deseja substituir?";
 				
 				switch (showConfirmDialog(message)) {
 				case JOptionPane.YES_OPTION:
@@ -222,13 +216,9 @@ public class Project extends JInternalFrame
 					try{
 						newConfigFile(codeFile.getAbsolutePath(),problemName);
 					}catch (Exception ex) {
-						if(Config.WINDOWS){
-							this.log("Erro 104 - Falha ao criar o Arquivo de configura��o", 
+						this.log("Erro 104 - Falha ao criar o Arquivo de configuração", 
 									ex.toString());
-						}else{
-							this.log("Erro 104 - Falha ao criar o Arquivo de configuração", 
-									ex.toString());
-						}
+						
 							
 					}
 					break;
@@ -253,13 +243,9 @@ public class Project extends JInternalFrame
 				try{
 					newConfigFile(codeFile.getAbsolutePath(),problemName);
 				}catch (Exception ex) {
-					if(Config.WINDOWS){
-						this.log("Erro 104 - Falha ao criar o Arquivo de configura��o", 
+					this.log("Erro 104 - Falha ao criar o Arquivo de configuração", 
 								ex.toString());
-					}else{
-						this.log("Erro 104 - Falha ao criar o Arquivo de configuração", 
-								ex.toString());
-					}
+					
 				}
 			}
 		break;
@@ -281,13 +267,9 @@ public class Project extends JInternalFrame
 							timelimit);
 							
 			} catch (Exception ex) {
-				if(Config.WINDOWS){
-					log("Erro 106 - Falha ao executar o compilador ou a executar o c�digo.\n"
+				log("Erro 106 - Falha ao executar o compilador ou a executar o código.\n"
 							+ "Mensagem retornada: "+ex.toString(),ex.toString());
-				}else{
-					log("Erro 106 - Falha ao executar o compilador ou a executar o código.\n"
-							+ "Mensagem retornada: "+ex.toString(),ex.toString());
-				}
+				
 				return;
 			}	
 						
@@ -300,15 +282,9 @@ public class Project extends JInternalFrame
 							Integer.parseInt(loOut[2].toString())/1000,
 							txtpnStdOutcode);
 					if(isCorrect)
-						if(Config.WINDOWS)
-							showMessage("O stdOut e StdOutCode s�o id�nticos.");
-						else
-							showMessage("O stdOut e StdOutCode são idênticos.");
+						showMessage("O stdOut e StdOutCode são idênticos.");
 					else
-						if(Config.WINDOWS)
-							showMessage("O stdOut e StdOutCode est�o diferentes.");
-						else
-							showMessage("O stdOut e StdOutCode estão diferentes.");
+						showMessage("O stdOut e StdOutCode estão diferentes.");
 					
 				}catch (Exception ex) {
 					txtpnStdOutcode.setText(lsStdOutCode+"\n--------"+Integer.parseInt(loOut[2].toString())/1000+
@@ -346,13 +322,9 @@ public class Project extends JInternalFrame
 			try{
 				newConfigFile(codeFile.getAbsolutePath(),problemName1);
 			}catch (Exception ex) {
-				if(Config.WINDOWS){
-					this.log("Erro 104 - Falha ao criar o Arquivo de configura��o", 
+				this.log("Erro 104 - Falha ao criar o Arquivo de configuração", 
 							ex.toString());
-				}else{
-					this.log("Erro 104 - Falha ao criar o Arquivo de configuração", 
-							ex.toString());
-				}
+				
 			}
 			break;
 		
@@ -416,10 +388,7 @@ public class Project extends JInternalFrame
 	
 	private boolean validateFields(){
 		if(txtProblem.getText().trim().equals("")){
-			if(Config.WINDOWS)
-				showMessage("Campo Problem � de preenchimento obrigat�rio.");
-			else
-				showMessage("Campo Problem é de preenchimento obrigatório.");
+			showMessage("Campo Problem é de preenchimento obrigatório.");
 			return false;
 		}
 			

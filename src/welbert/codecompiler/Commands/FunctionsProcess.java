@@ -86,9 +86,9 @@ public class FunctionsProcess {
 					Runtime.getRuntime().exec(new String[]{
 									"/bin/bash",
 									"-c",
-									aaFile.getPathName()+"/CodeCompiler.class",
-									"."
+									"cp "+aaFile.getPathName()+"/CodeCompiler.class . "
 					});
+				    
 					process = new RunProcess(new String[]{
 							"java",
 							"CodeCompiler"}
