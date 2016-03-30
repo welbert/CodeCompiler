@@ -14,6 +14,7 @@ import welbert.codecompiler.Commands.Functions;
 import welbert.codecompiler.gui.Project;
 import welbert.codecompiler.staticsvalues.Config;
 import welbert.codecompiler.utils.Arquivo;
+import welbert.codecompiler.utils.conectionUrl;
 
 import java.awt.event.*;
 import java.io.File;
@@ -202,9 +203,13 @@ public class MainFrame extends JFrame
     private static void createAndShowGUI() {
  
         MainFrame frame = MainFrame.getInstance();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
- 
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
         frame.setVisible(true);
+        try{
+        	String version = getLatestVersion().trim();
+        	if(!version.equals(""))
+        		JOptionPane.showMessageDialog(null, "A versão "+version+" já está disponível. Acesse: welbert.github.io/CodeCompiler");
+        }catch(Exception e){};
     }
  
     public static void main(String[] args) {
@@ -214,6 +219,15 @@ public class MainFrame extends JFrame
                 createAndShowGUI();
             }
         });
+    }
+    
+    private static String getLatestVersion() throws Exception{
+    	String stringVersion = new conectionUrl("http://welbert.freehostia.com/Version/codecompiler.html").getTitle();
+    	float version = Float.parseFloat(stringVersion);
+    	if(version > Float.parseFloat(Config.version))
+    		return stringVersion;
+    	else
+    		return "";
     }
     
     public void showMessage(String message){
