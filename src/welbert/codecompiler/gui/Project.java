@@ -60,6 +60,15 @@ public class Project extends JInternalFrame
 		setBounds(100, 100, 650, 400);
 		getContentPane().setLayout(new MigLayout("", "[grow][95.00,grow][][grow][][][grow][][][][][grow][][][][][][][][grow][][][]", "[][][][][grow][][][][][grow][grow][][][][][][][][][][][][][][]"));
 		
+		getContentPane().setFocusable(true);
+		getContentPane().addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode()==KeyEvent.VK_F5)
+					btnSubmit.doClick();
+			}
+		});
+		
 		lblProblem = new JLabel("Problem: ");
 		getContentPane().add(lblProblem, "cell 0 0,alignx trailing");
 		
@@ -279,7 +288,7 @@ public class Project extends JInternalFrame
 					boolean isCorrect;
 					isCorrect = myFunctions.diffStrings(txtpnStdOut.getText(),
 							String.valueOf(loOut[1]),
-							Integer.parseInt(loOut[2].toString())/1000,
+							Float.parseFloat(loOut[2].toString())/1000,
 							txtpnStdOutcode);
 					if(isCorrect)
 						showMessage("O stdOut e StdOutCode são idênticos.");
@@ -287,8 +296,8 @@ public class Project extends JInternalFrame
 						showMessage("O stdOut e StdOutCode estão diferentes.");
 					
 				}catch (Exception ex) {
-					txtpnStdOutcode.setText(lsStdOutCode+"\n--------"+Integer.parseInt(loOut[2].toString())/1000+
-							"sec's --------\n"+loOut[1]);
+					txtpnStdOutcode.setText(lsStdOutCode+"\n--------"+Float.parseFloat(loOut[2].toString())/1000+
+							" sec's --------\n"+loOut[1]);
 					log(ex.toString());
 				}
 			}else{

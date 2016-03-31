@@ -88,7 +88,7 @@ public class Functions {
 	 * @throws Exception
 	 * @author Welbert Serra
 	 */
-	public boolean diffStrings(String in1,String in2,int time,JTextPane textArea) throws Exception{	
+	public boolean diffStrings(String in1,String in2,float time,JTextPane textArea) throws Exception{	
 		StyledDocument doc = textArea.getStyledDocument();
 		String[] text1 = in1.split("\n");
 		String[] text2 = in2.split("\n");
@@ -102,7 +102,7 @@ public class Functions {
         Style styleDefault = textArea.addStyle("Line Default", null);
         StyleConstants.setForeground(styleDefault, Color.black);
         
-        doc.insertString(doc.getLength(), "\n--------"+time+"sec's --------\n",styleDefault);
+        doc.insertString(doc.getLength(), "\n--------"+time+" sec's --------\n",styleDefault);
         int i;
         for(i = 0;i<lenIn1 && i<lenIn2;i++){
         	if(text1[i].equals(text2[i]))
