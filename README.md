@@ -25,7 +25,7 @@ _Welbert Serra_
 
 ## Instalação & Execução
 1. Fazer o Download do Projeto
-2. Executar "CodeCompiler.jar"
+2. Executar "java -jar CodeCompiler.jar" no Terminal/Console na pasta do '.jar'
 	1. Caso não possua maquina java. 
 		1. **(Windows)** http://www.oracle.com/technetwork/java/javase/downloads/index.html
 		2. **(Linux)** sudo apt-get install default-jre
