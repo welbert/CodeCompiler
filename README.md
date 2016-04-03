@@ -15,6 +15,8 @@ _Welbert Serra_
 * Editar, Compilar e Executar códigos c,cpp e java (desde que tenha os compiladores na máquina)
 * TimeLimit para seu código não ultrapassar o tempo máximo de execução
 * Salvar os valores de entradas, saída, Timelimit para tentar resolver os problemas mais tarde
+ 
+![Imagem de Exemplo](https://welbert.github.io/CodeCompiler/images/capture.png)
 
 ***
 
@@ -41,4 +43,5 @@ _Welbert Serra_
 		2. **(Linux)** sudo apt-get install default-jdk
 
 	
-
+## Bugs ou Melhorias
+* Reportem em [Issues](https://github.com/welbert/CodeCompiler/issues/new)
