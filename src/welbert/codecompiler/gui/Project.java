@@ -223,7 +223,7 @@ public class Project extends JInternalFrame
 									ex.toString());
 					}
 					try{
-						newConfigFile(codeFile.getAbsolutePath(),problemName);
+						newConfigFile(codeFile.getRelativePath(),problemName);
 					}catch (Exception ex) {
 						this.log("Erro 104 - Falha ao criar o Arquivo de configuração", 
 									ex.toString());
@@ -250,7 +250,7 @@ public class Project extends JInternalFrame
 								ex.toString());
 				}
 				try{
-					newConfigFile(codeFile.getAbsolutePath(),problemName);
+					newConfigFile(codeFile.getRelativePath(),problemName);
 				}catch (Exception ex) {
 					this.log("Erro 104 - Falha ao criar o Arquivo de configuração", 
 								ex.toString());
@@ -329,7 +329,7 @@ public class Project extends JInternalFrame
 		case "SAVE":
 			String problemName1 = txtProblem.getText().replace(" ", "");
 			try{
-				newConfigFile(codeFile.getAbsolutePath(),problemName1);
+				newConfigFile(codeFile.getRelativePath(),problemName1);
 			}catch (Exception ex) {
 				this.log("Erro 104 - Falha ao criar o Arquivo de configuração", 
 							ex.toString());
@@ -350,7 +350,11 @@ public class Project extends JInternalFrame
 		String aux="",aux2="";
 		configFile = new Arquivo(file);
 		txtProblem.setText(configFile.carregar());
-		codeFile = new Arquivo(configFile.carregar());
+		if(Config.WINDOWS)
+			codeFile = new Arquivo(configFile.carregar().replace('/', '\\'));
+		else
+			codeFile = new Arquivo(configFile.carregar().replace('\\', '/'));
+		
 		try{
 			int timelimit = Integer.parseInt(configFile.carregar());
 			txtTimelimit.setText(timelimit+"");

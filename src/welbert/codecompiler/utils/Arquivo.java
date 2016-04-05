@@ -218,17 +218,7 @@ public class Arquivo  {
 	 * @author Welbert Serra
 	 */
 	public String getPathName(){
-		String sep;
-		if(WINDOWS)
-			sep = "\\";
-		else
-			sep = "/";
-		
-		int lastindex = arquivo.getAbsolutePath().lastIndexOf(sep);
-		if(lastindex!=-1)			
-			return arquivo.getAbsolutePath().substring(0,lastindex);
-		else
-			return arquivo.getAbsolutePath();
+		return arquivo.getParent();
 	}
 	
 	/**
