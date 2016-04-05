@@ -10,39 +10,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
-/* Version: 1.2
- * Construtor:
- * 	Arquivo(String nome); Nome se refere ao nome do arquivo
- * 
- * Comandos:
- * 	salva(String texto);Ele salvara no arquivo a string e pular� a linha no arquivo
- *  
- *  reset(); Ele reiniciar� o carregar(), apontando para o inicio do arquivo
- *  
- *  deteletarDado(int indicie);Ele deleta a linha indicada no indice
- *  
- *  modificar(int indice, String palavra); Ele modifica a linha indicada no indice
- *pela String palavra passada por parametro
- *	
- *	carregar();Ele retornar� a String presente na linha e pular� a linha do arquivo,
- *caso eu tente ler uma linha null, ele dar� um reset() e ser� lido a primeira linha
- *
- *	NEOF(); Retornar� um boolean indicando se o arquivo est� apontando para depois
- *da ultima linha. True = N�o � fim de arquivo || False = Fim de arquivo
- *
- *	fecha();Ele encerra o arquivo, este comando deve ser SEMPRE executado ao fim do
- *programa
- *
- *	deletarArquivo();Ele cria um novo arquivo em branco com o mesmo nome
- *
- *	getPathName();Retorna o caminho em que est� localizado o arquivo mais o nome
- *do arquivo
- *
- *	getFileName();Retorna o nome do arquivo
- *
- *	Arquivo.java by Welbert Serra
+/**
+ * Version: 1.4
  *		Se houver algum erro, enviar para welberts@gmail.com
-*/
+ * @author Welbert Serra
+ *
+ */
 public class Arquivo  {
 	private File arquivo;
 	
@@ -53,8 +26,13 @@ public class Arquivo  {
 	private FileReader fr;
 	private BufferedReader br;
 
+	/**
+	 * 
+	 * @param nome - Nome do arquivo ou caminho com nome do arquivo
+	 * @throws IOException
+	 * @author Welbert Serra
+	 */
 	public Arquivo(String nome)throws IOException{		
-		//nome = nome.concat(".txt");
 		arquivo = new File(nome);
 		String sep;
 		if(WINDOWS)
@@ -75,22 +53,38 @@ public class Arquivo  {
 		br = new BufferedReader(fr);
 
 		if(arquivo.exists()){
-			arquivo.createNewFile();
-			
-		}fw.close();
+			arquivo.createNewFile();			
+		}
+		fw.close();
 		bw.close();
 	}
 
+	/**
+	 * Cria o arquivo caso não exista o arquivo.
+	 * @throws IOException
+	 * @author Welbert Serra
+	 */
 	public void criaArquivo() throws IOException{
 		if(!arquivo.exists()){
 			arquivo.createNewFile();
 		}
 	}
 	
+	/**
+	 * Retorna o File utilizado no arquivo
+	 * @return File
+	 * @author Welbert Serra
+	 */
 	public File getFile(){
 		return arquivo;
 	}
 
+	/**
+	 * Salva uma Stringa e automaticamente quebra linha
+	 * @param texto - String do que se deseja salvar
+	 * @throws IOException
+	 * @author Welbert Serra
+	 */
 	public void salvar(String texto)throws IOException{
 		FileWriter fw = new FileWriter(arquivo, true);
 		BufferedWriter bw = new BufferedWriter(fw);
@@ -100,6 +94,11 @@ public class Arquivo  {
 		fw.close();
 	}
 	
+	/**
+	 * Reinicia o ponteiro de leitor do arquivo
+	 * @throws IOException
+	 * @author Welbert Serra
+	 */
 	public void reset() throws IOException{
 		br.close();
 		fr.close();
@@ -108,7 +107,14 @@ public class Arquivo  {
 
 	}
 	
-	public void deletarDado(int indice) throws IOException{
+	/**
+	 * Deletar uma linha do arquivo
+	 * @param indice - Linha que será deletada
+	 * @return String - Mensagem do erro ocorrido, senão String vazia
+	 * @throws IOException
+	 * @author Welbert Serra
+	 */
+	public String deletarDado(int indice) throws IOException{ //Ineficiente
 		reset();
 		ArrayList<String> aux= new ArrayList<String>(); 
 		while(NEOF()){
@@ -125,12 +131,20 @@ public class Arquivo  {
 					}
 				}
 		}else{
-			System.out.printf("\nA posicao "+indice+" n�o foi encontrada\n");
+			return "A posicao "+indice+" não foi encontrada";
 		}
 		reset();
+		return "";
 	}
 	
-	public void modificar(int indice, String palavra) throws IOException{
+	/**
+	 * Modifica uma linha por uma nova String
+	 * @param indice - Linha
+	 * @param palavra - Nova String
+	 * @throws IOException
+	 * @author Welbert Serra
+	 */
+	public String modificar(int indice, String palavra) throws IOException{ //Ineficiente
 		reset();
 		ArrayList<String> aux= new ArrayList<String>(); 
 		while(NEOF()){
@@ -144,30 +158,53 @@ public class Arquivo  {
 					salvar(aux.get(i));
 				}
 		}else{
-			System.out.printf("\nA posicao "+indice+" n�o foi encontrada\n");
+			return "A posicao "+indice+" não foi encontrada";
 		}
 		reset();
+		return "";
 		
 	}
 	
+	/**
+	 * Carrega uma linha do arquivo e aponta pra próxima linha
+	 * @return Linha do arquivo
+	 * @throws IOException
+	 * @author Welbert Serra
+	 */
 	public String carregar() throws IOException{
 		if(NEOF()){
-		return br.readLine();
+			return br.readLine();
 		}else{
 			reset();
 		return 	br.readLine();
 		}		
 	}
 
+	/**
+	 * Não End Of File
+	 * @return
+	 * @throws IOException
+	 * @author Welbert Serra
+	 */
 	public boolean NEOF() throws IOException{
 		return br.ready();
 	}
 	
+	/**
+	 * Fecha o Arquivo
+	 * @throws IOException
+	 * @author Welbert Serra
+	 */
 	public void fecha() throws IOException{
 		br.close();
 		fr.close();
 	}
 	
+	/**
+	 * Limpa o Arquivo
+	 * @throws IOException
+	 * @author Welbert Serra
+	 */
 	public void deletarArquivo() throws IOException{
 		FileWriter fw = new FileWriter(arquivo, false);
 		BufferedWriter bw = new BufferedWriter(fw);
@@ -175,6 +212,11 @@ public class Arquivo  {
 		bw.close();
 	}
 
+	/**
+	 * Retorna o caminho do Arquivo
+	 * @return String
+	 * @author Welbert Serra
+	 */
 	public String getPathName(){
 		String sep;
 		if(WINDOWS)
@@ -189,10 +231,32 @@ public class Arquivo  {
 			return arquivo.getAbsolutePath();
 	}
 	
+	/**
+	 * Retorna o Caminho Absoluto
+	 * @return String
+	 * @author Welbert Serra
+	 */
 	public String getAbsolutePath(){
 		return arquivo.getAbsolutePath();
 	}
 	
+	/**
+	 * Retorna o caminho Relativo
+	 * @return String
+	 * @author Welbert Serra
+	 */
+	public String getRelativePath(){
+		String path = arquivo.getAbsolutePath();
+		String base = new File(".").getAbsolutePath();
+		String relative = new File(base).toURI().relativize(new File(path).toURI()).getPath();
+		return relative;
+	}
+	
+	/**
+	 * Retorna o nome do arquivo
+	 * @return String
+	 * @author Welbert Serra
+	 */
 	public String getFileName(){
 		return arquivo.getName();
 	}
