@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Codecompiler by welbert</title>
+    <title>CodeCompiler by .:Welbert:.</title>
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/github-dark.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
@@ -16,6 +16,28 @@
     <![endif]-->
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
+    <style>
+      @-webkit-keyframes animatezoom{from{ -webkit-transform:scale(0);opacity: 0.3; } to{-webkit-transform:scale(1); opacity: 1;}}
+      #modal{
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        cursor: pointer;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 99;
+        display: none;
+        animation: animatezoom 0.6s;
+      }
+
+      #modalPicture{
+        margin-top: 15%;
+        margin-left: 20%;
+      }
+
+    </style>
+
   </head>
   <body>
       <div id="header">
@@ -27,11 +49,13 @@
         </nav>
       </div><!-- end header -->
 
+  <div id="modal" onclick="this.style.display='none'">
+    <img id="modalPicture" src="https://welbert.github.io/CodeCompiler/images/capture.png" alt="Imagem de Exemplo" />
+  </div>
     <div class="wrapper">
-
       <section>
         <div id="title">
-          <h1>Codecompiler</h1>
+          <h1>CodeCompiler</h1>
           <p>Facilitar a verificação dos valores de entrada e saída dos códigos para maratona de programação</p>
           <hr>
           <span class="credits left">Project maintained by <a href="https://github.com/welbert">welbert</a></span>
@@ -68,7 +92,7 @@
 <li>Salvar os valores de entradas, saída, Timelimit para tentar resolver os problemas mais tarde</li>
 </ul>
 
-<p><img src="https://welbert.github.io/CodeCompiler/images/capture.png" alt="Imagem de Exemplo"></p>
+<p onclick="document.getElementById('modal').style.display='block'"><img src="https://welbert.github.io/CodeCompiler/images/capture.png" alt="Imagem de Exemplo" /></p>
 
 <hr>
 
@@ -89,7 +113,7 @@
 <li>Executar "java -jar CodeCompiler.jar" no Terminal/Console na pasta do '.jar'
 
 <ol>
-<li>Caso não possua maquina java. 
+<li>Caso não possua maquina java.
 
 <ol>
 <li>
@@ -151,6 +175,6 @@
 
     </div>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-    
+
   </body>
 </html>
